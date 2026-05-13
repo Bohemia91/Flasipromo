@@ -241,8 +241,7 @@
 
     <!-- MENU PRINCIPAL -->
     <nav class="menu-principal">
-        <button class="boton-menu activo" onclick="cambiarSeccion('todos')">Todos los productos</button>
-        <button class="boton-menu" onclick="cambiarSeccion('nuevos')">✨ Productos nuevos</button>
+        <button class="boton-menu activo" onclick="cambiarSeccion('nuevos')">✨ Productos nuevos</button>
         <button class="boton-menu" onclick="cambiarSeccion('segunda')">♻️ Productos de segunda</button>
         <button class="boton-menu" onclick="cambiarSeccion('servicios')">🔧 Servicios</button>
     </nav>
@@ -300,7 +299,7 @@
     <script>
         // ARRAY PARA GUARDAR TODAS LAS PUBLICACIONES
         let publicaciones = [];
-        let categoriaActual = 'todos';
+        let categoriaActual = 'nuevos';
 
         // MAPEO DE CATEGORÍAS CON EMOJIS Y NOMBRES
         const categoriasMap = {
@@ -327,10 +326,14 @@
             // Verificar que no sea cero
             if(valor <= 0) return false;
             
-            // Verificar que no sean números repetidos (como 111, 115, 2222)
+            // Verificar que no sean dígitos repetidos consecutivos
             const valorStr = valor.toString();
-            const repetido = /^(\d)\1+$/;
-            return !repetido.test(valorStr);
+            for(let i = 0; i < valorStr.length - 1; i++) {
+                if(valorStr[i] === valorStr[i + 1]) {
+                    return false; // Hay dígitos repetidos consecutivos
+                }
+            }
+            return true;
         }
 
         // FUNCION PARA PUBLICAR UNA NUEVA OFERTA
@@ -423,20 +426,13 @@
             // Guardar de nuevo las que siguen vigentes
             localStorage.setItem('publicacionesProyecto2', JSON.stringify(publicaciones));
 
-            // Filtrar por categoría si es necesario
-            let publicacionesFiltradas = publicaciones;
-            if(categoriaActual !== 'todos') {
-                publicacionesFiltradas = publicaciones.filter(pub => pub.categoria === categoriaActual);
-            }
+            // Filtrar por categoría (ahora solo muestra la categoría seleccionada)
+            let publicacionesFiltradas = publicaciones.filter(pub => pub.categoria === categoriaActual);
 
             // Mostrar en pantalla
             const contenedor = document.getElementById('contenedorPublicaciones');
-            let tituloSeccion = '📢 Publicaciones recientes';
-            
-            if(categoriaActual !== 'todos') {
-                const catInfo = categoriasMap[categoriaActual];
-                tituloSeccion = `${catInfo.emoji} ${catInfo.nombre}`;
-            }
+            const catInfo = categoriasMap[categoriaActual];
+            const tituloSeccion = `${catInfo.emoji} ${catInfo.nombre}`;
             
             contenedor.innerHTML = `<h2 class="titulo-seccion">${tituloSeccion}</h2>`;
 
@@ -446,10 +442,10 @@
                 publicacionesFiltradas.forEach(pub => {
                     const tarjeta = document.createElement('div');
                     tarjeta.className = 'tarjeta-publicacion';
-                    const catInfo = categoriasMap[pub.categoria];
+                    const catInfoPub = categoriasMap[pub.categoria];
                     
                     tarjeta.innerHTML = `
-                        <span class="categoria-badge">${catInfo.emoji} ${catInfo.nombre}</span>
+                        <span class="categoria-badge">${catInfoPub.emoji} ${catInfoPub.nombre}</span>
                         <h3 class="titulo-producto">${pub.titulo}</h3>
                         <img src="${pub.foto}" alt="Foto del producto" class="imagen-producto">
                         <p class="caracteristicas">${pub.caracteristicas}</p>
