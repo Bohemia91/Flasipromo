@@ -297,16 +297,94 @@
     </div>
 
     <script>
-        // ARRAY PARA GUARDAR TODAS LAS PUBLICACIONES
-        let publicaciones = [];
-        let categoriaActual = 'nuevos';
-
         // MAPEO DE CATEGORÍAS CON EMOJIS Y NOMBRES
         const categoriasMap = {
             'nuevos': { nombre: 'Productos nuevos', emoji: '✨' },
             'segunda': { nombre: 'Productos de segunda', emoji: '♻️' },
             'servicios': { nombre: 'Servicios', emoji: '🔧' }
         };
+
+        let categoriaActual = 'nuevos';
+        let db;
+        let publicaciones = [];
+
+        // INICIALIZAR INDEXEDDB
+        function inicializarDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('FlasipromoDB', 1);
+
+                request.onerror = () => {
+                    console.error('Error al abrir IndexedDB');
+                    reject();
+                };
+
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    console.log('IndexedDB inicializado');
+                    resolve();
+                };
+
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+                    if (!database.objectStoreNames.contains('publicaciones')) {
+                        database.createObjectStore('publicaciones', { keyPath: 'id' });
+                    }
+                };
+            });
+        }
+
+        // GUARDAR PUBLICACIÓN EN INDEXEDDB
+        function guardarEnDB(publicacion) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['publicaciones'], 'readwrite');
+                const store = transaction.objectStore('publicaciones');
+                const request = store.add(publicacion);
+
+                request.onerror = () => reject();
+                request.onsuccess = () => {
+                    console.log('Publicación guardada en BD');
+                    resolve();
+                };
+            });
+        }
+
+        // CARGAR TODAS LAS PUBLICACIONES DE INDEXEDDB
+        function cargarDelDB() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['publicaciones'], 'readonly');
+                const store = transaction.objectStore('publicaciones');
+                const request = store.getAll();
+
+                request.onerror = () => reject();
+                request.onsuccess = (event) => {
+                    publicaciones = event.target.result.sort((a, b) => b.id - a.id);
+                    console.log('Publicaciones cargadas:', publicaciones);
+                    resolve();
+                };
+            });
+        }
+
+        // ELIMINAR PUBLICACIONES EXPIRADAS
+        function eliminarExpiradas() {
+            return new Promise((resolve, reject) => {
+                const ahora = new Date().getTime();
+                const transaction = db.transaction(['publicaciones'], 'readwrite');
+                const store = transaction.objectStore('publicaciones');
+
+                publicaciones.forEach(pub => {
+                    const fechaExpiracion = new Date(pub.fechaExpiracion).getTime();
+                    if (fechaExpiracion <= ahora) {
+                        store.delete(pub.id);
+                    }
+                });
+
+                transaction.onerror = () => reject();
+                transaction.oncomplete = () => {
+                    console.log('Publicaciones expiradas eliminadas');
+                    resolve();
+                };
+            });
+        }
 
         // FUNCION PARA CAMBIAR ENTRE SECCIONES
         function cambiarSeccion(tipo) {
@@ -363,7 +441,7 @@
 
             // Leer la imagen y convertirla a URL
             const lector = new FileReader();
-            lector.onload = function(e) {
+            lector.onload = async function(e) {
                 const urlImagen = e.target.result;
 
                 // Crear nueva publicación
@@ -379,11 +457,8 @@
                     fechaExpiracion: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString() // 72 horas = 3 días
                 };
 
-                // Guardar en el array
-                publicaciones.unshift(nuevaPublicacion);
-
-                // Guardar en el almacenamiento local
-                localStorage.setItem('publicacionesProyecto2', JSON.stringify(publicaciones));
+                // Guardar en la base de datos
+                await guardarEnDB(nuevaPublicacion);
 
                 // Mostrar mensaje de éxito
                 document.getElementById('mensajeExito').style.display = 'block';
@@ -397,7 +472,7 @@
                 document.getElementById('categoria').value = '';
 
                 // Recargar las publicaciones
-                cargarPublicaciones();
+                await cargarPublicaciones();
 
                 // Ocultar mensaje después de 5 segundos
                 setTimeout(() => {
@@ -409,22 +484,15 @@
         }
 
         // FUNCION PARA CARGAR Y MOSTRAR LAS PUBLICACIONES
-        function cargarPublicaciones() {
-            // Cargar datos del almacenamiento
-            const datosGuardados = localStorage.getItem('publicacionesProyecto2');
-            if(datosGuardados) {
-                publicaciones = JSON.parse(datosGuardados);
-            }
-
-            // Eliminar publicaciones que ya expiraron
-            const ahora = new Date().getTime();
-            publicaciones = publicaciones.filter(pub => {
-                const fechaExpiracion = new Date(pub.fechaExpiracion).getTime();
-                return fechaExpiracion > ahora;
-            });
-
-            // Guardar de nuevo las que siguen vigentes
-            localStorage.setItem('publicacionesProyecto2', JSON.stringify(publicaciones));
+        async function cargarPublicaciones() {
+            // Cargar datos de IndexedDB
+            await cargarDelDB();
+            
+            // Eliminar expiradas
+            await eliminarExpiradas();
+            
+            // Recargar después de eliminar expiradas
+            await cargarDelDB();
 
             // Filtrar por categoría (ahora solo muestra la categoría seleccionada)
             let publicacionesFiltradas = publicaciones.filter(pub => pub.categoria === categoriaActual);
@@ -458,8 +526,14 @@
             }
         }
 
+        // INICIALIZAR TODA LA APLICACIÓN
+        async function inicializarApp() {
+            await inicializarDB();
+            await cargarPublicaciones();
+        }
+
         // CARGAR PUBLICACIONES AL INICIAR LA PÁGINA
-        window.addEventListener('DOMContentLoaded', cargarPublicaciones);
+        window.addEventListener('DOMContentLoaded', inicializarApp);
     </script>
 </body>
 </html>
