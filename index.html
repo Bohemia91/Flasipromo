@@ -61,6 +61,11 @@
             transform: translateY(-3px);
         }
 
+        .boton-menu.activo {
+            background-color: #0A5F26;
+            color: white;
+        }
+
         /* SECCIÓN DE PUBLICACIONES */
         .contenedor-publicaciones {
             max-width: 1000px;
@@ -96,9 +101,21 @@
             padding-bottom: 0.5rem;
         }
 
+        .categoria-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            background-color: #0A5F26;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 0.8rem;
+            font-weight: bold;
+        }
+
         .caracteristicas {
             color: #444;
             margin: 1rem 0;
+            line-height: 1.5;
         }
 
         .valor {
@@ -224,10 +241,10 @@
 
     <!-- MENU PRINCIPAL -->
     <nav class="menu-principal">
-        <button class="boton-menu" onclick="cambiarSeccion('todos')">Todos los productos</button>
-        <button class="boton-menu" onclick="cambiarSeccion('segunda')">Productos de segunda</button>
-        <button class="boton-menu" onclick="cambiarSeccion('nuevos')">Productos nuevos</button>
-        <button class="boton-menu" onclick="cambiarSeccion('servicios')">Servicios</button>
+        <button class="boton-menu activo" onclick="cambiarSeccion('todos')">Todos los productos</button>
+        <button class="boton-menu" onclick="cambiarSeccion('nuevos')">✨ Productos nuevos</button>
+        <button class="boton-menu" onclick="cambiarSeccion('segunda')">♻️ Productos de segunda</button>
+        <button class="boton-menu" onclick="cambiarSeccion('servicios')">🔧 Servicios</button>
     </nav>
 
     <!-- FORMULARIO PARA PUBLICAR -->
@@ -261,12 +278,12 @@
         </div>
 
         <div class="campo-formulario">
-            <label for="categoria">Categoría *</label>
+            <label for="categoria">¿Qué tipo de oferta deseas publicar? *</label>
             <select id="categoria" required>
-                <option value="">Selecciona una opción</option>
-                <option value="segunda">Productos de segunda</option>
-                <option value="nuevos">Productos nuevos</option>
-                <option value="servicios">Servicios</option>
+                <option value="">Selecciona una categoría</option>
+                <option value="nuevos">✨ Productos nuevos</option>
+                <option value="segunda">♻️ Productos de segunda</option>
+                <option value="servicios">🔧 Servicios</option>
             </select>
         </div>
 
@@ -285,9 +302,23 @@
         let publicaciones = [];
         let categoriaActual = 'todos';
 
+        // MAPEO DE CATEGORÍAS CON EMOJIS Y NOMBRES
+        const categoriasMap = {
+            'nuevos': { nombre: 'Productos nuevos', emoji: '✨' },
+            'segunda': { nombre: 'Productos de segunda', emoji: '♻️' },
+            'servicios': { nombre: 'Servicios', emoji: '🔧' }
+        };
+
         // FUNCION PARA CAMBIAR ENTRE SECCIONES
         function cambiarSeccion(tipo) {
             categoriaActual = tipo;
+            
+            // Actualizar estilos de botones
+            document.querySelectorAll('.boton-menu').forEach(btn => {
+                btn.classList.remove('activo');
+            });
+            event.target.classList.add('activo');
+            
             cargarPublicaciones();
         }
 
@@ -400,7 +431,14 @@
 
             // Mostrar en pantalla
             const contenedor = document.getElementById('contenedorPublicaciones');
-            contenedor.innerHTML = '<h2 class="titulo-seccion">📢 Publicaciones recientes</h2>';
+            let tituloSeccion = '📢 Publicaciones recientes';
+            
+            if(categoriaActual !== 'todos') {
+                const catInfo = categoriasMap[categoriaActual];
+                tituloSeccion = `${catInfo.emoji} ${catInfo.nombre}`;
+            }
+            
+            contenedor.innerHTML = `<h2 class="titulo-seccion">${tituloSeccion}</h2>`;
 
             if(publicacionesFiltradas.length === 0) {
                 contenedor.innerHTML += '<p style="text-align: center; color: #666; font-size: 1.1rem; margin-top: 3rem;">No hay publicaciones activas en este momento</p>';
@@ -408,7 +446,10 @@
                 publicacionesFiltradas.forEach(pub => {
                     const tarjeta = document.createElement('div');
                     tarjeta.className = 'tarjeta-publicacion';
+                    const catInfo = categoriasMap[pub.categoria];
+                    
                     tarjeta.innerHTML = `
+                        <span class="categoria-badge">${catInfo.emoji} ${catInfo.nombre}</span>
                         <h3 class="titulo-producto">${pub.titulo}</h3>
                         <img src="${pub.foto}" alt="Foto del producto" class="imagen-producto">
                         <p class="caracteristicas">${pub.caracteristicas}</p>
