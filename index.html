@@ -52,6 +52,7 @@
             box-shadow: 0 3px 8px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
             border: 2px solid #0A5F26;
+            cursor: pointer;
         }
 
         .boton-menu:hover {
@@ -151,7 +152,8 @@
         }
 
         .campo-formulario input,
-        .campo-formulario textarea {
+        .campo-formulario textarea,
+        .campo-formulario select {
             width: 100%;
             padding: 0.9rem;
             border: 1px solid #ddd;
@@ -161,7 +163,8 @@
         }
 
         .campo-formulario input:focus,
-        .campo-formulario textarea:focus {
+        .campo-formulario textarea:focus,
+        .campo-formulario select:focus {
             outline: none;
             border-color: #0A5F26;
         }
@@ -221,10 +224,10 @@
 
     <!-- MENU PRINCIPAL -->
     <nav class="menu-principal">
-        <a href="#" class="boton-menu" onclick="cambiarSeccion('todos')">Todos los productos</a>
-        <a href="#" class="boton-menu" onclick="cambiarSeccion('segunda')">Productos de segunda</a>
-        <a href="#" class="boton-menu" onclick="cambiarSeccion('nuevos')">Productos nuevos</a>
-        <a href="#" class="boton-menu" onclick="cambiarSeccion('servicios')">Servicios</a>
+        <button class="boton-menu" onclick="cambiarSeccion('todos')">Todos los productos</button>
+        <button class="boton-menu" onclick="cambiarSeccion('segunda')">Productos de segunda</button>
+        <button class="boton-menu" onclick="cambiarSeccion('nuevos')">Productos nuevos</button>
+        <button class="boton-menu" onclick="cambiarSeccion('servicios')">Servicios</button>
     </nav>
 
     <!-- FORMULARIO PARA PUBLICAR -->
@@ -280,10 +283,11 @@
     <script>
         // ARRAY PARA GUARDAR TODAS LAS PUBLICACIONES
         let publicaciones = [];
+        let categoriaActual = 'todos';
 
         // FUNCION PARA CAMBIAR ENTRE SECCIONES
         function cambiarSeccion(tipo) {
-            // Aquí puedes agregar filtros si quieres, por ahora muestra todo
+            categoriaActual = tipo;
             cargarPublicaciones();
         }
 
@@ -388,10 +392,37 @@
             // Guardar de nuevo las que siguen vigentes
             localStorage.setItem('publicacionesProyecto2', JSON.stringify(publicaciones));
 
+            // Filtrar por categoría si es necesario
+            let publicacionesFiltradas = publicaciones;
+            if(categoriaActual !== 'todos') {
+                publicacionesFiltradas = publicaciones.filter(pub => pub.categoria === categoriaActual);
+            }
+
             // Mostrar en pantalla
             const contenedor = document.getElementById('contenedorPublicaciones');
             contenedor.innerHTML = '<h2 class="titulo-seccion">📢 Publicaciones recientes</h2>';
 
-            if(publicaciones.length === 0) {
-                contenedor.innerHTML += '<p style="text-align: center; color: #666; font-size: 1.1rem; margin-top: 3
-              
+            if(publicacionesFiltradas.length === 0) {
+                contenedor.innerHTML += '<p style="text-align: center; color: #666; font-size: 1.1rem; margin-top: 3rem;">No hay publicaciones activas en este momento</p>';
+            } else {
+                publicacionesFiltradas.forEach(pub => {
+                    const tarjeta = document.createElement('div');
+                    tarjeta.className = 'tarjeta-publicacion';
+                    tarjeta.innerHTML = `
+                        <h3 class="titulo-producto">${pub.titulo}</h3>
+                        <img src="${pub.foto}" alt="Foto del producto" class="imagen-producto">
+                        <p class="caracteristicas">${pub.caracteristicas}</p>
+                        <p class="valor">$ ${pub.valor.toLocaleString('es-CO')}</p>
+                        <p class="contacto">📞 Contacto: ${pub.contacto}</p>
+                        <p class="fecha">Publicado: ${new Date(pub.fechaCreacion).toLocaleDateString('es-CO')}</p>
+                    `;
+                    contenedor.appendChild(tarjeta);
+                });
+            }
+        }
+
+        // CARGAR PUBLICACIONES AL INICIAR LA PÁGINA
+        window.addEventListener('DOMContentLoaded', cargarPublicaciones);
+    </script>
+</body>
+</html>
