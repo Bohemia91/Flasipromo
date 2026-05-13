@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ofertas Santa Rosa de Osos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+
+        /* ENCABEZADO */
+        .encabezado {
+            background: linear-gradient(135deg, #0A5F26, #084D1E);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .encabezado h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* BOTONES PRINCIPALES */
+        .menu-principal {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 2rem 1rem;
+            flex-wrap: wrap;
+        }
+
+        .boton-menu {
+            display: block;
+            padding: 1.2rem 2rem;
+            background-color: white;
+            color: #0A5F26;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 2px solid #0A5F26;
+        }
+
+        .boton-menu:hover {
+            background-color: #0A5F26;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* SECCIÓN DE PUBLICACIONES */
+        .contenedor-publicaciones {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1rem 3rem;
+        }
+
+        .titulo-seccion {
+            text-align: center;
+            color: #0A5F26;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+        }
+
+        .tarjeta-publicacion {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease;
+        }
+
+        .tarjeta-publicacion:hover {
+            transform: scale(1.01);
+        }
+
+        .titulo-producto {
+            color: #0A5F26;
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        .caracteristicas {
+            color: #444;
+            margin: 1rem 0;
+        }
+
+        .valor {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #D4AF37;
+            margin: 1rem 0;
+        }
+
+        .contacto {
+            color: #0A5F26;
+            font-weight: bold;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .fecha {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 0.5rem;
+        }
+
+        .imagen-producto {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 8px;
+            margin: 1rem 0;
+            object-fit: cover;
+        }
+
+        /* FORMULARIO DE PUBLICACIÓN */
+        .formulario-publicacion {
+            background-color: white;
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+        }
+
+        .campo-formulario {
+            margin-bottom: 1.5rem;
+        }
+
+        .campo-formulario label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .campo-formulario input,
+        .campo-formulario textarea {
+            width: 100%;
+            padding: 0.9rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .campo-formulario input:focus,
+        .campo-formulario textarea:focus {
+            outline: none;
+            border-color: #0A5F26;
+        }
+
+        .campo-formulario textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .boton-publicar {
+            width: 100%;
+            padding: 1.2rem;
+            background-color: #0A5F26;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .boton-publicar:hover {
+            background-color: #084D1E;
+        }
+
+        .mensaje-error {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .mensaje-exito {
+            color: #28a745;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        /* OCULTAR MOSTRAR SECCIONES */
+        .seccion {
+            display: none;
+        }
+
+        .seccion.activa {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- ENCABEZADO -->
+    <header class="encabezado">
+        <h1>Ofertas Santa Rosa de Osos</h1>
+        <p>Lo mejor en productos y servicios, cerca de ti</p>
+    </header>
+
+    <!-- MENU PRINCIPAL -->
+    <nav class="menu-principal">
+        <a href="#" class="boton-menu" onclick="cambiarSeccion('todos')">Todos los productos</a>
+        <a href="#" class="boton-menu" onclick="cambiarSeccion('segunda')">Productos de segunda</a>
+        <a href="#" class="boton-menu" onclick="cambiarSeccion('nuevos')">Productos nuevos</a>
+        <a href="#" class="boton-menu" onclick="cambiarSeccion('servicios')">Servicios</a>
+    </nav>
+
+    <!-- FORMULARIO PARA PUBLICAR -->
+    <section class="formulario-publicacion">
+        <h2 style="text-align: center; color: #0A5F26; margin-bottom: 1.5rem;">📝 Publica tu oferta</h2>
+        
+        <div class="campo-formulario">
+            <label for="titulo">Nombre del artículo / Título *</label>
+            <input type="text" id="titulo" placeholder="Ej: Bicicleta de montaña en buen estado" required>
+        </div>
+
+        <div class="campo-formulario">
+            <label for="caracteristicas">Características del producto / Detalles *</label>
+            <textarea id="caracteristicas" placeholder="Escribe aquí todo lo que quieras contar: estado, medidas, colores, detalles, etc." required></textarea>
+        </div>
+
+        <div class="campo-formulario">
+            <label for="valor">Valor (COP) *</label>
+            <input type="number" id="valor" placeholder="Ej: 150000" min="1" required>
+            <div id="mensajeErrorValor" class="mensaje-error">⚠️ Por favor ingresa un valor real, no se aceptan números repetidos o cero</div>
+        </div>
+
+        <div class="campo-formulario">
+            <label for="foto">Foto del producto *</label>
+            <input type="file" id="foto" accept="image/*" required>
+        </div>
+
+        <div class="campo-formulario">
+            <label for="contacto">Número de contacto (teléfono) *</label>
+            <input type="tel" id="contacto" placeholder="Ej: 3101234567" required>
+        </div>
+
+        <div class="campo-formulario">
+            <label for="categoria">Categoría *</label>
+            <select id="categoria" required>
+                <option value="">Selecciona una opción</option>
+                <option value="segunda">Productos de segunda</option>
+                <option value="nuevos">Productos nuevos</option>
+                <option value="servicios">Servicios</option>
+            </select>
+        </div>
+
+        <button class="boton-publicar" onclick="publicarOferta()">Publicar ahora</button>
+        <div id="mensajeExito" class="mensaje-exito" style="text-align: center; margin-top: 1rem;">✅ Publicación creada correctamente, estará visible por 3 días</div>
+    </section>
+
+    <!-- SECCIÓN DE PUBLICACIONES -->
+    <div class="contenedor-publicaciones" id="contenedorPublicaciones">
+        <h2 class="titulo-seccion">📢 Publicaciones recientes</h2>
+        <!-- Las publicaciones se cargarán aquí automáticamente -->
+    </div>
+
+    <script>
+        // ARRAY PARA GUARDAR TODAS LAS PUBLICACIONES
+        let publicaciones = [];
+
+        // FUNCION PARA CAMBIAR ENTRE SECCIONES
+        function cambiarSeccion(tipo) {
+            // Aquí puedes agregar filtros si quieres, por ahora muestra todo
+            cargarPublicaciones();
+        }
+
+        // FUNCION PARA VALIDAR EL VALOR INGRESADO
+        function validarValor(valor) {
+            // Verificar que no sea cero
+            if(valor <= 0) return false;
+            
+            // Verificar que no sean números repetidos (como 111, 115, 2222)
+            const valorStr = valor.toString();
+            const repetido = /^(\d)\1+$/;
+            return !repetido.test(valorStr);
+        }
+
+        // FUNCION PARA PUBLICAR UNA NUEVA OFERTA
+        function publicarOferta() {
+            // Obtener valores del formulario
+            const titulo = document.getElementById('titulo').value.trim();
+            const caracteristicas = document.getElementById('caracteristicas').value.trim();
+            const valor = parseInt(document.getElementById('valor').value);
+            const fotoInput = document.getElementById('foto');
+            const contacto = document.getElementById('contacto').value.trim();
+            const categoria = document.getElementById('categoria').value;
+
+            // Validar que todos los campos estén llenos
+            if(!titulo || !caracteristicas || !valor || !fotoInput.files[0] || !contacto || !categoria) {
+                alert('Por favor llena todos los campos obligatorios');
+                return;
+            }
+
+            // Validar el valor
+            if(!validarValor(valor)) {
+                const mensajeError = document.getElementById('mensajeErrorValor');
+                mensajeError.style.display = 'block';
+                return;
+            } else {
+                document.getElementById('mensajeErrorValor').style.display = 'none';
+            }
+
+            // Leer la imagen y convertirla a URL
+            const lector = new FileReader();
+            lector.onload = function(e) {
+                const urlImagen = e.target.result;
+
+                // Crear nueva publicación
+                const nuevaPublicacion = {
+                    id: Date.now(), // Usamos el tiempo como identificador único
+                    titulo: titulo,
+                    caracteristicas: caracteristicas,
+                    valor: valor,
+                    foto: urlImagen,
+                    contacto: contacto,
+                    categoria: categoria,
+                    fechaCreacion: new Date().toISOString(),
+                    fechaExpiracion: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString() // 72 horas = 3 días
+                };
+
+                // Guardar en el array
+                publicaciones.unshift(nuevaPublicacion);
+
+                // Guardar en el almacenamiento local
+                localStorage.setItem('publicacionesProyecto2', JSON.stringify(publicaciones));
+
+                // Mostrar mensaje de éxito
+                document.getElementById('mensajeExito').style.display = 'block';
+                
+                // Limpiar formulario
+                document.getElementById('titulo').value = '';
+                document.getElementById('caracteristicas').value = '';
+                document.getElementById('valor').value = '';
+                document.getElementById('foto').value = '';
+                document.getElementById('contacto').value = '';
+                document.getElementById('categoria').value = '';
+
+                // Recargar las publicaciones
+                cargarPublicaciones();
+
+                // Ocultar mensaje después de 5 segundos
+                setTimeout(() => {
+                    document.getElementById('mensajeExito').style.display = 'none';
+                }, 5000);
+            };
+
+            lector.readAsDataURL(fotoInput.files[0]);
+        }
+
+        // FUNCION PARA CARGAR Y MOSTRAR LAS PUBLICACIONES
+        function cargarPublicaciones() {
+            // Cargar datos del almacenamiento
+            const datosGuardados = localStorage.getItem('publicacionesProyecto2');
+            if(datosGuardados) {
+                publicaciones = JSON.parse(datosGuardados);
+            }
+
+            // Eliminar publicaciones que ya expiraron
+            const ahora = new Date().getTime();
+            publicaciones = publicaciones.filter(pub => {
+                const fechaExpiracion = new Date(pub.fechaExpiracion).getTime();
+                return fechaExpiracion > ahora;
+            });
+
+            // Guardar de nuevo las que siguen vigentes
+            localStorage.setItem('publicacionesProyecto2', JSON.stringify(publicaciones));
+
+            // Mostrar en pantalla
+            const contenedor = document.getElementById('contenedorPublicaciones');
+            contenedor.innerHTML = '<h2 class="titulo-seccion">📢 Publicaciones recientes</h2>';
+
+            if(publicaciones.length === 0) {
+                contenedor.innerHTML += '<p style="text-align: center; color: #666; font-size: 1.1rem; margin-top: 3
+              
