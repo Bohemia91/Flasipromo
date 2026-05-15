@@ -314,7 +314,7 @@
             const email = document.getElementById('regEmail').value;
             const pass = document.getElementById('regPass').value;
             auth.createUserWithEmailAndPassword(email, pass)
-            .then(() => { alert('✅ Cuenta creada'); cerrarModalAcceso(); })
+            .then(() => { alert('✅ Cuenta creada exitosamente'); cerrarModalAcceso(); })
             .catch(error => { 
                 document.getElementById('mensajeAccesoError').textContent = '❌ ' + error.message; 
                 document.getElementById('mensajeAccesoError').style.display='block'; 
@@ -325,8 +325,8 @@
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
             auth.signInWithEmailAndPassword(email, pass)
-            .then(() => { alert('✅ Sesión iniciada'); cerrarModalAcceso(); })
+            .then(() => { alert('✅ Sesión iniciada correctamente'); cerrarModalAcceso(); })
             .catch(error => { 
                 document.getElementById('mensajeAccesoError').textContent = '❌ ' + error.message; 
-                document.getElementById('mensajeAccesoError').style.display='block
+                document.getElementById('mensajeAcc
         
