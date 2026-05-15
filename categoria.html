@@ -1,77 +1,224 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Categoría</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<title>Categoría</title>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "TU_API_KEY",
-            authDomain: "TU_DOMINIO.firebaseapp.com",
-            databaseURL: "https://TU_URL_DATABASE.firebaseio.com",
-            projectId: "TU_ID_PROYECTO",
-            storageBucket: "TU_BUCKET.appspot.com",
-            messagingSenderId: "TU_SENDER_ID",
-            appId: "TU_APP_ID"
-        };
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-    </script>
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f3f3f3;
+}
+
+.encabezado{
+background:#056b1f;
+padding:14px;
+}
+
+.btn-regresar{
+width:100%;
+max-width:170px;
+padding:11px;
+border-radius:14px;
+background:white;
+border:3px solid #056b1f;
+font-size:14px;
+font-weight:bold;
+color:#056b1f;
+margin-bottom:12px;
+}
+
+.buscador{
+background:white;
+padding:12px;
+border-radius:14px;
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.buscador input{
+border:none;
+outline:none;
+width:100%;
+font-size:14px;
+}
+
+.lista{
+padding:14px;
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.tarjeta{
+background:white;
+padding:14px;
+border-radius:16px;
+}
+
+.tarjeta h3{
+font-size:16px;
+margin-bottom:8px;
+color:#056b1f;
+}
+
+.tarjeta p{
+font-size:13px;
+margin-bottom:8px;
+}
+
+.precio{
+font-size:17px;
+font-weight:bold;
+color:#d4af37;
+}
+
+.btn-detalle{
+margin-top:10px;
+width:100%;
+padding:12px;
+border:none;
+border-radius:12px;
+background:#056b1f;
+color:white;
+font-weight:bold;
+}
+
+</style>
 </head>
 <body>
 
-<button onclick="window.location.href='index.html'">Regresar</button>
+<div class="encabezado">
 
-<h1 id="tituloCategoria"></h1>
+<button class="btn-regresar"
+onclick="window.location.href='index.html'">
+← Regresar
+</button>
 
-<div id="listaProductos"></div>
+<div class="buscador">
+<span>🔍</span>
+
+<input type="text"
+id="busqueda"
+placeholder="Buscar productos...">
+</div>
+
+</div>
+
+<div class="lista" id="listaProductos"></div>
 
 <script>
 
-const parametrosUrl = new URLSearchParams(window.location.search);
-const categoriaSeleccionada = parametrosUrl.get('categoria');
+const firebaseConfig = {
+apiKey:"TU_API_KEY",
+authDomain:"TU_DOMINIO.firebaseapp.com",
+databaseURL:"https://TU_URL_DATABASE.firebaseio.com",
+projectId:"TU_ID_PROYECTO",
+storageBucket:"TU_BUCKET.appspot.com",
+messagingSenderId:"TU_SENDER_ID",
+appId:"TU_APP_ID"
+};
 
-const titulo = document.getElementById('tituloCategoria');
+firebase.initializeApp(firebaseConfig);
 
-titulo.textContent = categoriaSeleccionada;
+const db = firebase.database();
+
+const parametros = new URLSearchParams(window.location.search);
+
+const categoria = parametros.get('categoria');
 
 const lista = document.getElementById('listaProductos');
 
+const buscador = document.getElementById('busqueda');
 
-db.ref('publicaciones').on('value', (datos) => {
+let productos = [];
 
-    lista.innerHTML = '';
+function renderizar(listaProductos){
 
-    datos.forEach((hijo) => {
+lista.innerHTML='';
 
-        const producto = hijo.val();
-        producto.id = hijo.key;
+listaProductos.forEach(producto=>{
 
-        if (producto.categoria === categoriaSeleccionada) {
+const tarjeta=document.createElement('div');
 
-            const tarjeta = document.createElement('div');
+tarjeta.className='tarjeta';
 
-            tarjeta.innerHTML = `
-                <hr>
-                <h2>${producto.titulo}</h2>
-                <p>${producto.caracteristicas}</p>
-                <p><strong>$${producto.valor}</strong></p>
-                <button onclick="abrirDetalle('${producto.id}')">Ver detalles</button>
-            `;
+tarjeta.innerHTML=`
+<h3>${producto.titulo}</h3>
+<p>${producto.caracteristicas}</p>
+<div class="precio">$${producto.valor}</div>
 
-            lista.appendChild(tarjeta);
-        }
-    });
+<button class="btn-detalle"
+onclick="verDetalle('${producto.id}')">
+Ver detalles
+</button>
+`;
+
+lista.appendChild(tarjeta);
+
 });
 
-function abrirDetalle(id) {
-    window.location.href = `detalle.html?id=${id}`;
 }
+
+function verDetalle(id){
+window.location.href=`detalle.html?id=${id}`;
+}
+
+db.ref('publicaciones').on('value',(datos)=>{
+
+productos=[];
+
+if(datos.exists()){
+
+datos.forEach((hijo)=>{
+
+const producto=hijo.val();
+
+producto.id=hijo.key;
+
+if(
+producto.categoria===categoria &&
+producto.fechaExpiracion > Date.now()
+){
+
+productos.push(producto);
+
+}
+
+});
+
+renderizar(productos);
+
+}
+
+});
+
+buscador.addEventListener('input',()=>{
+
+const texto=buscador.value.toLowerCase();
+
+const filtrados=productos.filter(producto=>
+
+producto.titulo.toLowerCase().includes(texto)
+
+);
+
+renderizar(filtrados);
+
+});
 
 </script>
 
