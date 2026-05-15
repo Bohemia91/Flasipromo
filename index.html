@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ofertas Santa Rosa de Osos</title>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js"></script>
+
+    <!-- FIREBASE COMPAT -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
     <script>
         const firebaseConfig = {
             apiKey: "TU_API_KEY",
@@ -17,336 +20,144 @@
             messagingSenderId: "TU_SENDER_ID",
             appId: "TU_APP_ID"
         };
-        const app = firebase.initializeApp(firebaseConfig);
+
+        firebase.initializeApp(firebaseConfig);
+
         const db = firebase.database();
         const auth = firebase.auth();
     </script>
-    <style>
-        * {margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif;}
-        body {background-color: #f5f5f5; line-height: 1.6;}
-
-        .encabezado {
-            background: linear-gradient(135deg, #0A5F26, #084D1E);
-            color: white;
-            padding: 2rem 1rem;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            position: relative;
-        }
-        .encabezado h1 {font-size: 1.8rem; margin-bottom: 0.5rem;}
-
-        .usuario-info {
-            position: absolute;
-            top: 1.5rem;
-            right: 2rem;
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .usuario-info span {
-            background-color: rgba(255,255,255,0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-        }
-        .btn-sesion {
-            padding: 0.6rem 1.2rem;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .btn-login {background-color: white; color: #0A5F26;}
-        .btn-logout {background-color: #dc3545; color: white; display: none;}
-
-        .menu-principal {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            padding: 2rem 1rem;
-            flex-wrap: wrap;
-        }
-        .boton-menu, .boton-publicar-oferta {
-            padding: 1.2rem 2rem;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: 0.3s;
-            border: none;
-        }
-        .boton-menu {
-            background-color: white;
-            color: #0A5F26;
-            border: 2px solid #0A5F26;
-        }
-        .boton-menu:hover {background-color: #0A5F26; color: white; transform: translateY(-3px);}
-        .boton-publicar-oferta {
-            background-color: #D4AF37;
-            color: #0A5F26;
-            box-shadow: 0 5px 15px rgba(212,175,55,0.4);
-        }
-        .boton-publicar-oferta:hover {background-color: #E6C753; transform: translateY(-3px);}
-
-        .mensaje-acceso {
-            text-align: center;
-            color: #dc3545;
-            font-weight: bold;
-            margin-top: 1rem;
-            display: none;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            padding: 20px;
-        }
-        .modal-contenido {
-            background-color: white;
-            margin: 20px auto;
-            padding: 2rem;
-            border-radius: 12px;
-            max-width: 600px;
-        }
-        .cerrar-modal {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            cursor: pointer;
-        }
-        .modal h2 {text-align: center; color: #0A5F26; margin-bottom: 1.5rem;}
-
-        .campo-formulario {margin-bottom: 1.5rem;}
-        .campo-formulario label {display: block; font-weight: bold; margin-bottom: 0.5rem; color: #333;}
-        .campo-formulario input, .campo-formulario textarea, .campo-formulario select {
-            width: 100%;
-            padding: 0.9rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-        .campo-formulario textarea {min-height: 120px; resize: vertical;}
-
-        .boton-enviar {
-            width: 100%;
-            padding: 1.2rem;
-            background-color: #0A5F26;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .boton-enviar:hover {background-color: #084D1E;}
-
-        .pestanas-acceso {display: flex; margin-bottom: 2rem; border-bottom: 2px solid #eee;}
-        .pestana-acceso {
-            flex: 1;
-            padding: 1rem;
-            text-align: center;
-            font-weight: bold;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-        }
-        .pestana-acceso.activa {border-bottom-color: #0A5F26; color: #0A5F26;}
-        .contenido-acceso {display: none;}
-        .contenido-acceso.activo {display: block;}
-
-        .mensaje-error {color: #dc3545; font-size: 0.9rem; margin-top: 0.5rem; display: none;}
-        .mensaje-exito {color: #28a745; font-size: 0.9rem; margin-top: 0.5rem; display: none; text-align: center;}
-
-        @media (max-width: 768px) {
-            .usuario-info {position: static; margin-bottom: 1rem; justify-content: center;}
-            .menu-principal {gap: 1rem;}
-            .boton-menu, .boton-publicar-oferta {padding: 1rem 1.5rem; font-size: 1rem;}
-        }
-    </style>
 </head>
 <body>
-    <header class="encabezado">
-        <h1>Ofertas Santa Rosa de Osos</h1>
-        <p>Lo mejor en productos y servicios, cerca de ti</p>
-        <div class="usuario-info" id="seccionUsuario">
-            <span id="nombreUsuario" style="display: none;"></span>
-            <button class="btn-sesion btn-login" id="btnAbrirAcceso" onclick="abrirModalAcceso()">Iniciar Sesión</button>
-            <button class="btn-sesion btn-logout" id="btnCerrarSesion" onclick="cerrarSesion()">Cerrar Sesión</button>
-        </div>
-    </header>
 
-    <nav class="menu-principal">
-        <button class="boton-menu" onclick="abrirEnNuevaPestana('categoria.html?categoria=nuevos')">✨ Productos nuevos</button>
-        <button class="boton-menu" onclick="abrirEnNuevaPestana('categoria.html?categoria=segunda')">♻️ Productos de segunda</button>
-        <button class="boton-menu" onclick="abrirEnNuevaPestana('categoria.html?categoria=servicios')">🔧 Servicios</button>
-        <button class="boton-publicar-oferta" onclick="accionPublicar()">📝 Publicar oferta</button>
-    </nav>
+<h1>Ofertas Santa Rosa de Osos</h1>
 
-    <div class="mensaje-acceso" id="mensajeAcceso">Para poder publicar una oferta debes iniciar sesión o registrarte</div>
+<button onclick="abrirEnNuevaPestana('categoria.html?categoria=nuevos')">Productos nuevos</button>
+<button onclick="abrirEnNuevaPestana('categoria.html?categoria=segunda')">Productos segunda</button>
+<button onclick="abrirEnNuevaPestana('categoria.html?categoria=servicios')">Servicios</button>
+<button onclick="accionPublicar()">Publicar oferta</button>
 
-    <div id="modalPublicar" class="modal">
-        <div class="modal-contenido">
-            <span class="cerrar-modal" onclick="cerrarModal()">&times;</span>
-            <h2>📝 Publica tu oferta</h2>
-            <div class="campo-formulario">
-                <label>Nombre del artículo / Título *</label>
-                <input type="text" id="titulo" required>
-            </div>
-            <div class="campo-formulario">
-                <label>Características / Detalles *</label>
-                <textarea id="caracteristicas" required></textarea>
-            </div>
-            <div class="campo-formulario">
-                <label>Valor (COP) *</label>
-                <input type="number" id="valor" min="1" required>
-                <div id="mensajeErrorValor" class="mensaje-error">⚠️ No se aceptan números repetidos o cero</div>
-            </div>
-            <div class="campo-formulario">
-                <label>Foto del producto *</label>
-                <input type="file" id="foto" accept="image/*" required>
-            </div>
-            <div class="campo-formulario">
-                <label>Número de contacto *</label>
-                <input type="tel" id="contacto" required>
-            </div>
-            <div class="campo-formulario">
-                <label>Categoría *</label>
-                <select id="categoria" required>
-                    <option value="">Selecciona</option>
-                    <option value="nuevos">✨ Productos nuevos</option>
-                    <option value="segunda">♻️ Productos de segunda</option>
-                    <option value="servicios">🔧 Servicios</option>
-                </select>
-            </div>
-            <button type="button" class="boton-enviar" onclick="publicarOferta()">Publicar ahora</button>
-            <div id="mensajeExito" class="mensaje-exito">✅ Publicación creada correctamente</div>
-        </div>
-    </div>
+<div id="mensajeAcceso" style="display:none; color:red;">
+Debes iniciar sesión
+</div>
 
-    <div id="modalAcceso" class="modal">
-        <div class="modal-contenido">
-            <span class="cerrar-modal" onclick="cerrarModalAcceso()">&times;</span>
-            <h2>👤 Acceso Usuarios</h2>
-            <div class="pestanas-acceso">
-                <div class="pestana-acceso activa" onclick="cambiarPestana('login')">Iniciar Sesión</div>
-                <div class="pestana-acceso" onclick="cambiarPestana('registro')">Registrarse</div>
-            </div>
-            <div class="contenido-acceso activo" id="contenidoLogin">
-                <div class="campo-formulario">
-                    <label>Correo Electrónico</label>
-                    <input type="email" id="loginEmail">
-                </div>
-                <div class="campo-formulario">
-                    <label>Contraseña</label>
-                    <input type="password" id="loginPass">
-                </div>
-                <button type="button" class="boton-enviar" onclick="iniciarSesion()">Entrar</button>
-            </div>
-            <div class="contenido-acceso" id="contenidoRegistro">
-                <div class="campo-formulario">
-                    <label>Nombre Completo</label>
-                    <input type="text" id="regNombre">
-                </div>
-                <div class="campo-formulario">
-                    <label>Correo Electrónico</label>
-                    <input type="email" id="regEmail">
-                </div>
-                <div class="campo-formulario">
-                    <label>Contraseña (mínimo 6 caracteres)</label>
-                    <input type="password" id="regPass">
-                </div>
-                <button type="button" class="boton-enviar" onclick="registrarUsuario()">Crear Cuenta</button>
-            </div>
-            <div id="mensajeAccesoError" class="mensaje-error"></div>
-        </div>
-    </div>
+<hr>
 
-    <script>
-        let usuarioActual = null;
+<h2>Acceso</h2>
 
-        // FUNCIONES DE LOS BOTONES - YA FUNCIONAN CORRECTAMENTE
-        function abrirEnNuevaPestana(url) { 
-            window.open(url, '_blank'); 
-        }
+<input type="email" id="loginEmail" placeholder="Correo">
+<input type="password" id="loginPass" placeholder="Contraseña">
+<button onclick="iniciarSesion()">Entrar</button>
 
-        function accionPublicar() {
-            if (usuarioActual) {
-                abrirModal();
-            } else {
-                document.getElementById('mensajeAcceso').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('mensajeAcceso').style.display = 'none';
-                }, 3000);
-            }
-        }
+<hr>
 
-        function abrirModal() { 
-            document.getElementById('modalPublicar').style.display = 'block'; 
-        }
+<h2>Registro</h2>
 
-        function cerrarModal() { 
-            document.getElementById('modalPublicar').style.display = 'none'; 
-        }
+<input type="text" id="regNombre" placeholder="Nombre">
+<input type="email" id="regEmail" placeholder="Correo">
+<input type="password" id="regPass" placeholder="Contraseña">
+<button onclick="registrarUsuario()">Crear cuenta</button>
 
-        function abrirModalAcceso() { 
-            document.getElementById('modalAcceso').style.display = 'block'; 
-        }
+<hr>
 
-        function cerrarModalAcceso() { 
-            document.getElementById('modalAcceso').style.display = 'none'; 
-        }
+<div id="formularioPublicar" style="display:none;">
+    <input type="text" id="titulo" placeholder="Título">
+    <textarea id="caracteristicas" placeholder="Descripción"></textarea>
+    <input type="number" id="valor" placeholder="Precio">
+    <input type="text" id="contacto" placeholder="Contacto">
 
-        function cambiarPestana(tipo) {
-            const pestanas = document.querySelectorAll('.pestana-acceso');
-            const contLogin = document.getElementById('contenidoLogin');
-            const contRegistro = document.getElementById('contenidoRegistro');
+    <select id="categoria">
+        <option value="nuevos">Nuevos</option>
+        <option value="segunda">Segunda</option>
+        <option value="servicios">Servicios</option>
+    </select>
 
-            if (tipo === 'login') {
-                pestanas[0].classList.add('activa');
-                pestanas[1].classList.remove('activa');
-                contLogin.classList.add('activo');
-                contRegistro.classList.remove('activo');
-            } else {
-                pestanas[0].classList.remove('activa');
-                pestanas[1].classList.add('activa');
-                contLogin.classList.remove('activo');
-                contRegistro.classList.add('activo');
-            }
-        }
+    <button onclick="publicarOferta()">Publicar</button>
+</div>
 
-        // ESTADO DEL USUARIO
-        auth.onAuthStateChanged((usuario) => {
-            if (usuario) {
-                usuarioActual = usuario;
-                document.getElementById('nombreUsuario').textContent = usuario.email;
-                document.getElementById('nombreUsuario').style.display = 'inline';
-                document.getElementById('btnAbrirAcceso').style.display = 'none';
-                document.getElementById('btnCerrarSesion').style.display = 'inline';
-            } else {
-                usuarioActual = null;
-                document.getElementById('nombreUsuario').style.display = 'none';
-                document.getElementById('btnAbrirAcceso').style.display = 'inline';
-                document.getElementById('btnCerrarSesion').style.display = 'none';
-            }
-        });
+<script>
 
-        // FUNCIONES DE ACCESO Y REGISTRO
-        function registrarUsuario() {
-            const email = document.getElementById('regEmail').value;
-            const pass = document.getElementById('regPass').value;
-            const errorDiv = document.getElementById('mensajeAccesoError');
+let usuarioActual = null;
 
-            if (!email || !pass) {
-                errorDiv.textContent = '⚠️ Llena todos los campos';
-                errorDiv.style.display = 'block';
-                return;
-            }
+function abrirEnNuevaPestana(url) {
+    window.location.href = url;
+}
 
-            auth.createUserWithEmailAndPassword(email, pass)
-            .then(() => {
-                alert('✅ Cuenta creada
-        
+function accionPublicar() {
+    if (usuarioActual) {
+        document.getElementById('formularioPublicar').style.display = 'block';
+    } else {
+        document.getElementById('mensajeAcceso').style.display = 'block';
+    }
+}
+
+function registrarUsuario() {
+
+    const email = document.getElementById('regEmail').value;
+    const pass = document.getElementById('regPass').value;
+
+    auth.createUserWithEmailAndPassword(email, pass)
+    .then(() => {
+        alert('✅ Cuenta creada correctamente');
+    })
+    .catch((error) => {
+        alert(error.message);
+    });
+}
+
+function iniciarSesion() {
+
+    const email = document.getElementById('loginEmail').value;
+    const pass = document.getElementById('loginPass').value;
+
+    auth.signInWithEmailAndPassword(email, pass)
+    .then(() => {
+        alert('✅ Sesión iniciada');
+    })
+    .catch((error) => {
+        alert(error.message);
+    });
+}
+
+function publicarOferta() {
+
+    const titulo = document.getElementById('titulo').value;
+    const caracteristicas = document.getElementById('caracteristicas').value;
+    const valor = document.getElementById('valor').value;
+    const contacto = document.getElementById('contacto').value;
+    const categoria = document.getElementById('categoria').value;
+
+    db.ref('publicaciones').push({
+        titulo,
+        caracteristicas,
+        valor,
+        contacto,
+        categoria,
+        fecha: Date.now()
+    })
+    .then(() => {
+        alert('✅ Publicación creada');
+    })
+    .catch((error) => {
+        alert(error.message);
+    });
+}
+
+function cerrarSesion() {
+    auth.signOut();
+}
+
+auth.onAuthStateChanged((usuario) => {
+
+    if (usuario) {
+        usuarioActual = usuario;
+        console.log('Usuario conectado');
+    } else {
+        usuarioActual = null;
+        console.log('Sin sesión');
+    }
+});
+
+</script>
+
+</body>
+</html>
