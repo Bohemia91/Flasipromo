@@ -268,7 +268,7 @@
     <script>
         let usuarioActual = null;
 
-        // FUNCIONES BÁSICAS DE LOS BOTONES - YA ESTÁN CORREGIDAS
+        // FUNCIONES DE LOS BOTONES - YA FUNCIONAN CORRECTAMENTE
         function abrirEnNuevaPestana(url) { 
             window.open(url, '_blank'); 
         }
@@ -302,19 +302,19 @@
 
         function cambiarPestana(tipo) {
             const pestanas = document.querySelectorAll('.pestana-acceso');
-            const contenidoLogin = document.getElementById('contenidoLogin');
-            const contenidoRegistro = document.getElementById('contenidoRegistro');
+            const contLogin = document.getElementById('contenidoLogin');
+            const contRegistro = document.getElementById('contenidoRegistro');
 
             if (tipo === 'login') {
                 pestanas[0].classList.add('activa');
                 pestanas[1].classList.remove('activa');
-                contenidoLogin.classList.add('activo');
-                contenidoRegistro.classList.remove('activo');
+                contLogin.classList.add('activo');
+                contRegistro.classList.remove('activo');
             } else {
                 pestanas[0].classList.remove('activa');
                 pestanas[1].classList.add('activa');
-                contenidoLogin.classList.remove('activo');
-                contenidoRegistro.classList.add('activo');
+                contLogin.classList.remove('activo');
+                contRegistro.classList.add('activo');
             }
         }
 
@@ -334,17 +334,19 @@
             }
         });
 
-        // FUNCIONES DE ACCESO
+        // FUNCIONES DE ACCESO Y REGISTRO
         function registrarUsuario() {
             const email = document.getElementById('regEmail').value;
             const pass = document.getElementById('regPass').value;
-            const errorElemento = document.getElementById('mensajeAccesoError');
+            const errorDiv = document.getElementById('mensajeAccesoError');
 
             if (!email || !pass) {
-                errorElemento.textContent = '⚠️ Debes llenar todos los campos';
-                errorElemento.style.display = 'block';
+                errorDiv.textContent = '⚠️ Llena todos los campos';
+                errorDiv.style.display = 'block';
                 return;
             }
 
-            auth.createUserWithEmailAndPassword(email, pass
+            auth.createUserWithEmailAndPassword(email, pass)
+            .then(() => {
+                alert('✅ Cuenta creada
         
