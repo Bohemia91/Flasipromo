@@ -315,7 +315,10 @@
             const pass = document.getElementById('regPass').value;
             auth.createUserWithEmailAndPassword(email, pass)
             .then(() => { alert('✅ Cuenta creada'); cerrarModalAcceso(); })
-            .catch(error => { document.getElementById('mensajeAccesoError').textContent = '❌ ' + error.message; document.getElementById('mensajeAccesoError').style.display='block'; });
+            .catch(error => { 
+                document.getElementById('mensajeAccesoError').textContent = '❌ ' + error.message; 
+                document.getElementById('mensajeAccesoError').style.display='block'; 
+            });
         }
 
         function iniciarSesion() {
@@ -323,5 +326,7 @@
             const pass = document.getElementById('loginPass').value;
             auth.signInWithEmailAndPassword(email, pass)
             .then(() => { alert('✅ Sesión iniciada'); cerrarModalAcceso(); })
-            .catch(error => { document.getElementById('mensajeAccesoError
+            .catch(error => { 
+                document.getElementById('mensajeAccesoError').textContent = '❌ ' + error.message; 
+                document.getElementById('mensajeAccesoError').style.display='block
         
