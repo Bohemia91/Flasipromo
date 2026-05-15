@@ -268,33 +268,57 @@
     <script>
         let usuarioActual = null;
 
-        function abrirEnNuevaPestana(url) { window.open(url, '_blank'); }
+        // FUNCIONES BÁSICAS DE LOS BOTONES - YA ESTÁN CORREGIDAS
+        function abrirEnNuevaPestana(url) { 
+            window.open(url, '_blank'); 
+        }
+
         function accionPublicar() {
-            if (usuarioActual) abrirModal();
-            else {
+            if (usuarioActual) {
+                abrirModal();
+            } else {
                 document.getElementById('mensajeAcceso').style.display = 'block';
-                setTimeout(() => document.getElementById('mensajeAcceso').style.display = 'none', 3000);
+                setTimeout(() => {
+                    document.getElementById('mensajeAcceso').style.display = 'none';
+                }, 3000);
             }
         }
-        function abrirModal() { document.getElementById('modalPublicar').style.display = 'block'; }
-        function cerrarModal() { document.getElementById('modalPublicar').style.display = 'none'; }
-        function abrirModalAcceso() { document.getElementById('modalAcceso').style.display = 'block'; }
-        function cerrarModalAcceso() { document.getElementById('modalAcceso').style.display = 'none'; }
+
+        function abrirModal() { 
+            document.getElementById('modalPublicar').style.display = 'block'; 
+        }
+
+        function cerrarModal() { 
+            document.getElementById('modalPublicar').style.display = 'none'; 
+        }
+
+        function abrirModalAcceso() { 
+            document.getElementById('modalAcceso').style.display = 'block'; 
+        }
+
+        function cerrarModalAcceso() { 
+            document.getElementById('modalAcceso').style.display = 'none'; 
+        }
 
         function cambiarPestana(tipo) {
-            if(tipo === 'login'){
-                document.querySelectorAll('.pestana-acceso')[0].classList.add('activa');
-                document.querySelectorAll('.pestana-acceso')[1].classList.remove('activa');
-                document.getElementById('contenidoLogin').classList.add('activo');
-                document.getElementById('contenidoRegistro').classList.remove('activo');
+            const pestanas = document.querySelectorAll('.pestana-acceso');
+            const contenidoLogin = document.getElementById('contenidoLogin');
+            const contenidoRegistro = document.getElementById('contenidoRegistro');
+
+            if (tipo === 'login') {
+                pestanas[0].classList.add('activa');
+                pestanas[1].classList.remove('activa');
+                contenidoLogin.classList.add('activo');
+                contenidoRegistro.classList.remove('activo');
             } else {
-                document.querySelectorAll('.pestana-acceso')[0].classList.remove('activa');
-                document.querySelectorAll('.pestana-acceso')[1].classList.add('activa');
-                document.getElementById('contenidoLogin').classList.remove('activo');
-                document.getElementById('contenidoRegistro').classList.add('activo');
+                pestanas[0].classList.remove('activa');
+                pestanas[1].classList.add('activa');
+                contenidoLogin.classList.remove('activo');
+                contenidoRegistro.classList.add('activo');
             }
         }
 
+        // ESTADO DEL USUARIO
         auth.onAuthStateChanged((usuario) => {
             if (usuario) {
                 usuarioActual = usuario;
@@ -310,23 +334,17 @@
             }
         });
 
+        // FUNCIONES DE ACCESO
         function registrarUsuario() {
             const email = document.getElementById('regEmail').value;
             const pass = document.getElementById('regPass').value;
-            auth.createUserWithEmailAndPassword(email, pass)
-            .then(() => { alert('✅ Cuenta creada exitosamente'); cerrarModalAcceso(); })
-            .catch(error => { 
-                document.getElementById('mensajeAccesoError').textContent = '❌ ' + error.message; 
-                document.getElementById('mensajeAccesoError').style.display='block'; 
-            });
-        }
+            const errorElemento = document.getElementById('mensajeAccesoError');
 
-        function iniciarSesion() {
-            const email = document.getElementById('loginEmail').value;
-            const pass = document.getElementById('loginPass').value;
-            auth.signInWithEmailAndPassword(email, pass)
-            .then(() => { alert('✅ Sesión iniciada correctamente'); cerrarModalAcceso(); })
-            .catch(error => { 
-                document.getElementById('mensajeAccesoError').textContent = '❌ ' + error.message; 
-                document.getElementById('mensajeAcc
+            if (!email || !pass) {
+                errorElemento.textContent = '⚠️ Debes llenar todos los campos';
+                errorElemento.style.display = 'block';
+                return;
+            }
+
+            auth.createUserWithEmailAndPassword(email, pass
         
