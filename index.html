@@ -3,30 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ofertas Santa Rosa de Osos</title>
+<title>Ofertas Santa Rosa</title>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
-<script>
-const firebaseConfig = {
-    apiKey: "TU_API_KEY",
-    authDomain: "TU_DOMINIO.firebaseapp.com",
-    databaseURL: "https://TU_URL_DATABASE.firebaseio.com",
-    projectId: "TU_ID_PROYECTO",
-    storageBucket: "TU_BUCKET.appspot.com",
-    messagingSenderId: "TU_SENDER_ID",
-    appId: "TU_APP_ID"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const db = firebase.database();
-const auth = firebase.auth();
-</script>
-
 <style>
+
 *{
 margin:0;
 padding:0;
@@ -35,182 +19,190 @@ font-family:Arial,sans-serif;
 }
 
 body{
-background:#efefef;
+background:#f3f3f3;
+height:100vh;
+overflow:hidden;
+display:flex;
+flex-direction:column;
 }
 
 .encabezado{
-background:#025b16;
-padding:28px 14px;
-text-align:center;
+background:#056b1f;
 color:white;
+padding:18px 10px;
+text-align:center;
 }
 
 .encabezado h1{
-font-size:16px;
-font-weight:bold;
-margin-bottom:20px;
+font-size:20px;
+margin-bottom:5px;
 }
 
 .encabezado p{
-font-size:14px;
-margin-bottom:35px;
+font-size:12px;
+margin-bottom:10px;
 }
 
 .btn-login{
 background:white;
-color:#025b16;
-padding:12px 22px;
+color:#056b1f;
 border:none;
-border-radius:16px;
-font-size:22px;
+padding:9px 18px;
+border-radius:12px;
+font-size:13px;
 font-weight:bold;
-cursor:pointer;
 }
 
 .menu{
-padding:60px 20px;
+flex:1;
 display:flex;
 flex-direction:column;
-gap:35px;
+justify-content:center;
 align-items:center;
+gap:12px;
+padding:12px;
 }
 
 .btn-menu{
-width:90%;
-max-width:300px;
-padding:15px;
-font-size:16px;
-font-weight:bold;
+width:100%;
+max-width:270px;
+padding:14px;
 border-radius:16px;
 background:white;
-border:5px solid #0b6b28;
-color:#0b6b28;
-cursor:pointer;
-box-shadow:0 5px 10px rgba(0,0,0,0.08);
+border:3px solid #056b1f;
+font-size:15px;
+font-weight:bold;
+color:#056b1f;
 }
 
 .btn-publicar{
 background:#e3c74b;
 border:none;
-box-shadow:0 10px 20px rgba(227,199,75,0.4);
 }
 
 .modal{
 display:none;
 position:fixed;
-z-index:1000;
 left:0;
 top:0;
 width:100%;
 height:100%;
 background:rgba(0,0,0,0.6);
-padding:20px;
+padding:15px;
 }
 
 .modal-contenido{
 background:white;
-max-width:500px;
+max-width:350px;
 margin:40px auto;
-padding:30px;
-border-radius:20px;
+padding:20px;
+border-radius:18px;
 }
 
 .modal h2{
-text-align:center;
-margin-bottom:25px;
-color:#025b16;
+font-size:18px;
+margin-bottom:15px;
+color:#056b1f;
 }
 
 input,textarea,select{
 width:100%;
-padding:15px;
-margin-bottom:18px;
+padding:12px;
+margin-bottom:12px;
 border-radius:12px;
 border:1px solid #ccc;
-font-size:16px;
+font-size:14px;
 }
 
 .btn-enviar{
 width:100%;
-padding:18px;
+padding:13px;
 border:none;
-border-radius:14px;
-background:#025b16;
+border-radius:12px;
+background:#056b1f;
 color:white;
-font-size:20px;
 font-weight:bold;
-cursor:pointer;
+font-size:14px;
 }
 
 .cerrar{
 float:right;
-font-size:28px;
-cursor:pointer;
+font-size:24px;
 }
 
-@media(max-width:768px){
-
-.encabezado h1{
-font-size:34px;
-}
-
-.encabezado p{
-font-size:18px;
-}
-
-.btn-menu{
-font-size:20px;
-padding:22px;
-}
-}
 </style>
 </head>
 <body>
 
 <div class="encabezado">
-<h1>Ofertas Santa Rosa de Osos</h1>
-<p>Lo mejor en productos y servicios, cerca de ti</p>
-<button class="btn-login" onclick="abrirLogin()">Iniciar Sesión</button>
+<h1>Ofertas Santa Rosa</h1>
+<p>Productos y servicios cerca de ti</p>
+
+<button class="btn-login" onclick="abrirLogin()">
+Iniciar Sesión
+</button>
 </div>
 
 <div class="menu">
-<button class="btn-menu" onclick="abrirCategoria('nuevos')">✨ Productos nuevos</button>
-<button class="btn-menu" onclick="abrirCategoria('segunda')">♻️ Productos de segunda</button>
-<button class="btn-menu" onclick="abrirCategoria('servicios')">🔧 Servicios</button>
-<button class="btn-menu btn-publicar" onclick="mostrarPublicar()">📝 Publicar oferta</button>
+
+<button class="btn-menu" onclick="abrirCategoria('nuevos')">
+✨ Productos nuevos
+</button>
+
+<button class="btn-menu" onclick="abrirCategoria('segunda')">
+♻️ Productos segunda
+</button>
+
+<button class="btn-menu" onclick="abrirCategoria('servicios')">
+🔧 Servicios
+</button>
+
+<button class="btn-menu btn-publicar" onclick="mostrarPublicar()">
+📝 Publicar oferta
+</button>
+
 </div>
 
 <div class="modal" id="modalLogin">
 <div class="modal-contenido">
-<span class="cerrar" onclick="cerrarLogin()">×</span>
-<h2>Iniciar Sesión</h2>
 
-<input type="email" id="loginEmail" placeholder="Correo electrónico">
+<span class="cerrar" onclick="cerrarLogin()">×</span>
+
+<h2>Iniciar sesión</h2>
+
+<input type="email" id="loginEmail" placeholder="Correo">
 <input type="password" id="loginPass" placeholder="Contraseña">
 
-<button class="btn-enviar" onclick="iniciarSesion()">Entrar</button>
+<button class="btn-enviar" onclick="iniciarSesion()">
+Entrar
+</button>
 
-<hr style="margin:25px 0;">
+<hr style="margin:18px 0;">
 
 <h2>Crear cuenta</h2>
 
-<input type="text" id="regNombre" placeholder="Nombre completo">
-<input type="email" id="regEmail" placeholder="Correo electrónico">
+<input type="text" id="regNombre" placeholder="Nombre">
+<input type="email" id="regEmail" placeholder="Correo">
 <input type="password" id="regPass" placeholder="Contraseña">
 
-<button class="btn-enviar" onclick="registrarUsuario()">Crear Cuenta</button>
+<button class="btn-enviar" onclick="registrarUsuario()">
+Crear cuenta
+</button>
+
 </div>
 </div>
 
 <div class="modal" id="modalPublicar">
 <div class="modal-contenido">
-<span class="cerrar" onclick="cerrarPublicar()">×</span>
-<h2>Publicar Oferta</h2>
 
-<input type="text" id="titulo" placeholder="Título del producto">
+<span class="cerrar" onclick="cerrarPublicar()">×</span>
+
+<h2>Publicar oferta</h2>
+
+<input type="text" id="titulo" placeholder="Título">
 <textarea id="caracteristicas" placeholder="Descripción"></textarea>
 <input type="number" id="valor" placeholder="Precio">
-<input type="text" id="contacto" placeholder="Número de contacto">
+<input type="text" id="contacto" placeholder="Contacto">
 
 <select id="categoria">
 <option value="nuevos">Productos nuevos</option>
@@ -218,16 +210,40 @@ padding:22px;
 <option value="servicios">Servicios</option>
 </select>
 
-<button class="btn-enviar" onclick="publicarOferta()">Publicar</button>
+<button class="btn-enviar" onclick="publicarOferta()">
+Publicar
+</button>
+
 </div>
 </div>
 
 <script>
 
+const firebaseConfig = {
+apiKey:"TU_API_KEY",
+authDomain:"TU_DOMINIO.firebaseapp.com",
+databaseURL:"https://TU_URL_DATABASE.firebaseio.com",
+projectId:"TU_ID_PROYECTO",
+storageBucket:"TU_BUCKET.appspot.com",
+messagingSenderId:"TU_SENDER_ID",
+appId:"TU_APP_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database();
+const auth = firebase.auth();
+
 let usuarioActual = null;
 
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+auth.onAuthStateChanged((usuario)=>{
+usuarioActual = usuario;
+});
+
 function abrirCategoria(categoria){
-window.location.href = `categoria.html?categoria=${categoria}`;
+window.location.href=`categoria.html?categoria=${categoria}`;
 }
 
 function abrirLogin(){
@@ -245,6 +261,7 @@ document.getElementById('modalPublicar').style.display='block';
 }else{
 alert('Debes iniciar sesión');
 }
+
 }
 
 function cerrarPublicar(){
@@ -253,16 +270,26 @@ document.getElementById('modalPublicar').style.display='none';
 
 function registrarUsuario(){
 
+const nombre=document.getElementById('regNombre').value;
 const email=document.getElementById('regEmail').value;
 const pass=document.getElementById('regPass').value;
 
 auth.createUserWithEmailAndPassword(email,pass)
-.then(()=>{
-alert('Cuenta creada correctamente');
+.then((cred)=>{
+
+db.ref('usuarios/'+cred.user.uid).set({
+nombre,
+correo:email,
+fechaRegistro:Date.now()
+});
+
+alert('Cuenta creada');
+
 })
 .catch((error)=>{
 alert(error.message);
 });
+
 }
 
 function iniciarSesion(){
@@ -278,6 +305,7 @@ cerrarLogin();
 .catch((error)=>{
 alert(error.message);
 });
+
 }
 
 function publicarOferta(){
@@ -288,31 +316,21 @@ const valor=document.getElementById('valor').value;
 const contacto=document.getElementById('contacto').value;
 const categoria=document.getElementById('categoria').value;
 
-if(!titulo || !valor){
-alert('Completa los campos');
-return;
-}
-
 db.ref('publicaciones').push({
 titulo,
 caracteristicas,
 valor,
 contacto,
 categoria,
-fecha:Date.now()
+fecha:Date.now(),
+fechaExpiracion:Date.now() + (3*24*60*60*1000)
 })
 .then(()=>{
 alert('Oferta publicada');
 cerrarPublicar();
-})
-.catch((error)=>{
-alert(error.message);
 });
-}
 
-auth.onAuthStateChanged((usuario)=>{
-usuarioActual=usuario;
-});
+}
 
 </script>
 
