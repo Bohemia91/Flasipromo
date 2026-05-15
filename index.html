@@ -1,160 +1,317 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ofertas Santa Rosa de Osos</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ofertas Santa Rosa de Osos</title>
 
-    <!-- FIREBASE COMPAT -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "TU_API_KEY",
-            authDomain: "TU_DOMINIO.firebaseapp.com",
-            databaseURL: "https://TU_URL_DATABASE.firebaseio.com",
-            projectId: "TU_ID_PROYECTO",
-            storageBucket: "TU_BUCKET.appspot.com",
-            messagingSenderId: "TU_SENDER_ID",
-            appId: "TU_APP_ID"
-        };
+<script>
+const firebaseConfig = {
+    apiKey: "TU_API_KEY",
+    authDomain: "TU_DOMINIO.firebaseapp.com",
+    databaseURL: "https://TU_URL_DATABASE.firebaseio.com",
+    projectId: "TU_ID_PROYECTO",
+    storageBucket: "TU_BUCKET.appspot.com",
+    messagingSenderId: "TU_SENDER_ID",
+    appId: "TU_APP_ID"
+};
 
-        firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 
-        const db = firebase.database();
-        const auth = firebase.auth();
-    </script>
+const db = firebase.database();
+const auth = firebase.auth();
+</script>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#efefef;
+}
+
+.encabezado{
+background:#025b16;
+padding:70px 20px;
+text-align:center;
+color:white;
+}
+
+.encabezado h1{
+font-size:55px;
+font-weight:bold;
+margin-bottom:20px;
+}
+
+.encabezado p{
+font-size:22px;
+margin-bottom:35px;
+}
+
+.btn-login{
+background:white;
+color:#025b16;
+padding:18px 45px;
+border:none;
+border-radius:16px;
+font-size:22px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.menu{
+padding:60px 20px;
+display:flex;
+flex-direction:column;
+gap:35px;
+align-items:center;
+}
+
+.btn-menu{
+width:90%;
+max-width:420px;
+padding:28px;
+font-size:24px;
+font-weight:bold;
+border-radius:24px;
+background:white;
+border:5px solid #0b6b28;
+color:#0b6b28;
+cursor:pointer;
+box-shadow:0 5px 10px rgba(0,0,0,0.08);
+}
+
+.btn-publicar{
+background:#e3c74b;
+border:none;
+box-shadow:0 10px 20px rgba(227,199,75,0.4);
+}
+
+.modal{
+display:none;
+position:fixed;
+z-index:1000;
+left:0;
+top:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+padding:20px;
+}
+
+.modal-contenido{
+background:white;
+max-width:500px;
+margin:40px auto;
+padding:30px;
+border-radius:20px;
+}
+
+.modal h2{
+text-align:center;
+margin-bottom:25px;
+color:#025b16;
+}
+
+input,textarea,select{
+width:100%;
+padding:15px;
+margin-bottom:18px;
+border-radius:12px;
+border:1px solid #ccc;
+font-size:16px;
+}
+
+.btn-enviar{
+width:100%;
+padding:18px;
+border:none;
+border-radius:14px;
+background:#025b16;
+color:white;
+font-size:20px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.cerrar{
+float:right;
+font-size:28px;
+cursor:pointer;
+}
+
+@media(max-width:768px){
+
+.encabezado h1{
+font-size:34px;
+}
+
+.encabezado p{
+font-size:18px;
+}
+
+.btn-menu{
+font-size:20px;
+padding:22px;
+}
+}
+</style>
 </head>
 <body>
 
+<div class="encabezado">
 <h1>Ofertas Santa Rosa de Osos</h1>
-
-<button onclick="abrirEnNuevaPestana('categoria.html?categoria=nuevos')">Productos nuevos</button>
-<button onclick="abrirEnNuevaPestana('categoria.html?categoria=segunda')">Productos segunda</button>
-<button onclick="abrirEnNuevaPestana('categoria.html?categoria=servicios')">Servicios</button>
-<button onclick="accionPublicar()">Publicar oferta</button>
-
-<div id="mensajeAcceso" style="display:none; color:red;">
-Debes iniciar sesión
+<p>Lo mejor en productos y servicios, cerca de ti</p>
+<button class="btn-login" onclick="abrirLogin()">Iniciar Sesión</button>
 </div>
 
-<hr>
+<div class="menu">
+<button class="btn-menu" onclick="abrirCategoria('nuevos')">✨ Productos nuevos</button>
+<button class="btn-menu" onclick="abrirCategoria('segunda')">♻️ Productos de segunda</button>
+<button class="btn-menu" onclick="abrirCategoria('servicios')">🔧 Servicios</button>
+<button class="btn-menu btn-publicar" onclick="mostrarPublicar()">📝 Publicar oferta</button>
+</div>
 
-<h2>Acceso</h2>
+<div class="modal" id="modalLogin">
+<div class="modal-contenido">
+<span class="cerrar" onclick="cerrarLogin()">×</span>
+<h2>Iniciar Sesión</h2>
 
-<input type="email" id="loginEmail" placeholder="Correo">
+<input type="email" id="loginEmail" placeholder="Correo electrónico">
 <input type="password" id="loginPass" placeholder="Contraseña">
-<button onclick="iniciarSesion()">Entrar</button>
 
-<hr>
+<button class="btn-enviar" onclick="iniciarSesion()">Entrar</button>
 
-<h2>Registro</h2>
+<hr style="margin:25px 0;">
 
-<input type="text" id="regNombre" placeholder="Nombre">
-<input type="email" id="regEmail" placeholder="Correo">
+<h2>Crear cuenta</h2>
+
+<input type="text" id="regNombre" placeholder="Nombre completo">
+<input type="email" id="regEmail" placeholder="Correo electrónico">
 <input type="password" id="regPass" placeholder="Contraseña">
-<button onclick="registrarUsuario()">Crear cuenta</button>
 
-<hr>
+<button class="btn-enviar" onclick="registrarUsuario()">Crear Cuenta</button>
+</div>
+</div>
 
-<div id="formularioPublicar" style="display:none;">
-    <input type="text" id="titulo" placeholder="Título">
-    <textarea id="caracteristicas" placeholder="Descripción"></textarea>
-    <input type="number" id="valor" placeholder="Precio">
-    <input type="text" id="contacto" placeholder="Contacto">
+<div class="modal" id="modalPublicar">
+<div class="modal-contenido">
+<span class="cerrar" onclick="cerrarPublicar()">×</span>
+<h2>Publicar Oferta</h2>
 
-    <select id="categoria">
-        <option value="nuevos">Nuevos</option>
-        <option value="segunda">Segunda</option>
-        <option value="servicios">Servicios</option>
-    </select>
+<input type="text" id="titulo" placeholder="Título del producto">
+<textarea id="caracteristicas" placeholder="Descripción"></textarea>
+<input type="number" id="valor" placeholder="Precio">
+<input type="text" id="contacto" placeholder="Número de contacto">
 
-    <button onclick="publicarOferta()">Publicar</button>
+<select id="categoria">
+<option value="nuevos">Productos nuevos</option>
+<option value="segunda">Productos segunda</option>
+<option value="servicios">Servicios</option>
+</select>
+
+<button class="btn-enviar" onclick="publicarOferta()">Publicar</button>
+</div>
 </div>
 
 <script>
 
 let usuarioActual = null;
 
-function abrirEnNuevaPestana(url) {
-    window.location.href = url;
+function abrirCategoria(categoria){
+window.location.href = `categoria.html?categoria=${categoria}`;
 }
 
-function accionPublicar() {
-    if (usuarioActual) {
-        document.getElementById('formularioPublicar').style.display = 'block';
-    } else {
-        document.getElementById('mensajeAcceso').style.display = 'block';
-    }
+function abrirLogin(){
+document.getElementById('modalLogin').style.display='block';
 }
 
-function registrarUsuario() {
-
-    const email = document.getElementById('regEmail').value;
-    const pass = document.getElementById('regPass').value;
-
-    auth.createUserWithEmailAndPassword(email, pass)
-    .then(() => {
-        alert('✅ Cuenta creada correctamente');
-    })
-    .catch((error) => {
-        alert(error.message);
-    });
+function cerrarLogin(){
+document.getElementById('modalLogin').style.display='none';
 }
 
-function iniciarSesion() {
+function mostrarPublicar(){
 
-    const email = document.getElementById('loginEmail').value;
-    const pass = document.getElementById('loginPass').value;
-
-    auth.signInWithEmailAndPassword(email, pass)
-    .then(() => {
-        alert('✅ Sesión iniciada');
-    })
-    .catch((error) => {
-        alert(error.message);
-    });
+if(usuarioActual){
+document.getElementById('modalPublicar').style.display='block';
+}else{
+alert('Debes iniciar sesión');
+}
 }
 
-function publicarOferta() {
-
-    const titulo = document.getElementById('titulo').value;
-    const caracteristicas = document.getElementById('caracteristicas').value;
-    const valor = document.getElementById('valor').value;
-    const contacto = document.getElementById('contacto').value;
-    const categoria = document.getElementById('categoria').value;
-
-    db.ref('publicaciones').push({
-        titulo,
-        caracteristicas,
-        valor,
-        contacto,
-        categoria,
-        fecha: Date.now()
-    })
-    .then(() => {
-        alert('✅ Publicación creada');
-    })
-    .catch((error) => {
-        alert(error.message);
-    });
+function cerrarPublicar(){
+document.getElementById('modalPublicar').style.display='none';
 }
 
-function cerrarSesion() {
-    auth.signOut();
+function registrarUsuario(){
+
+const email=document.getElementById('regEmail').value;
+const pass=document.getElementById('regPass').value;
+
+auth.createUserWithEmailAndPassword(email,pass)
+.then(()=>{
+alert('Cuenta creada correctamente');
+})
+.catch((error)=>{
+alert(error.message);
+});
 }
 
-auth.onAuthStateChanged((usuario) => {
+function iniciarSesion(){
 
-    if (usuario) {
-        usuarioActual = usuario;
-        console.log('Usuario conectado');
-    } else {
-        usuarioActual = null;
-        console.log('Sin sesión');
-    }
+const email=document.getElementById('loginEmail').value;
+const pass=document.getElementById('loginPass').value;
+
+auth.signInWithEmailAndPassword(email,pass)
+.then(()=>{
+alert('Sesión iniciada');
+cerrarLogin();
+})
+.catch((error)=>{
+alert(error.message);
+});
+}
+
+function publicarOferta(){
+
+const titulo=document.getElementById('titulo').value;
+const caracteristicas=document.getElementById('caracteristicas').value;
+const valor=document.getElementById('valor').value;
+const contacto=document.getElementById('contacto').value;
+const categoria=document.getElementById('categoria').value;
+
+if(!titulo || !valor){
+alert('Completa los campos');
+return;
+}
+
+db.ref('publicaciones').push({
+titulo,
+caracteristicas,
+valor,
+contacto,
+categoria,
+fecha:Date.now()
+})
+.then(()=>{
+alert('Oferta publicada');
+cerrarPublicar();
+})
+.catch((error)=>{
+alert(error.message);
+});
+}
+
+auth.onAuthStateChanged((usuario)=>{
+usuarioActual=usuario;
 });
 
 </script>
