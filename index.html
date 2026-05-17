@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ofertas Santa Rosa</title>
 
+<!-- Librerías de Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
@@ -218,30 +219,36 @@ Publicar
 </div>
 
 <script>
-
+// 👇 AQUÍ ESTÁ TU CONFIGURACIÓN DE FIREBASE ACTUALIZADA 👇
 const firebaseConfig = {
-apiKey:"TU_API_KEY",
-authDomain:"TU_DOMINIO.firebaseapp.com",
-databaseURL:"https://TU_URL_DATABASE.firebaseio.com",
-projectId:"TU_ID_PROYECTO",
-storageBucket:"TU_BUCKET.appspot.com",
-messagingSenderId:"TU_SENDER_ID",
-appId:"TU_APP_ID"
+  apiKey: "AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
+  authDomain: "flasipromo.firebaseapp.com",
+  databaseURL: "https://flasipromo.firebaseio.com",
+  projectId: "flasipromo",
+  storageBucket: "flasipromo.firebasestorage.app",
+  messagingSenderId: "439920052201",
+  appId: "1:439920052201:web:ddf170b3be99b732cced78",
+  measurementId: "G-LWKKN5ESQR"
 };
 
+// Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
 
+// Referencias a los servicios
 const db = firebase.database();
 const auth = firebase.auth();
 
 let usuarioActual = null;
 
+// Mantener sesión iniciada
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
+// Detectar cuando cambia el estado de la sesión
 auth.onAuthStateChanged((usuario)=>{
 usuarioActual = usuario;
 });
 
+// Funciones del menú
 function abrirCategoria(categoria){
 window.location.href=`categoria.html?categoria=${categoria}`;
 }
@@ -255,45 +262,40 @@ document.getElementById('modalLogin').style.display='none';
 }
 
 function mostrarPublicar(){
-
 if(usuarioActual){
 document.getElementById('modalPublicar').style.display='block';
 }else{
 alert('Debes iniciar sesión');
 }
-
 }
 
 function cerrarPublicar(){
 document.getElementById('modalPublicar').style.display='none';
 }
 
+// Registrar nuevo usuario
 function registrarUsuario(){
-
 const nombre=document.getElementById('regNombre').value;
 const email=document.getElementById('regEmail').value;
 const pass=document.getElementById('regPass').value;
 
 auth.createUserWithEmailAndPassword(email,pass)
 .then((cred)=>{
-
+// Guardar datos del usuario en la base de datos
 db.ref('usuarios/'+cred.user.uid).set({
-nombre,
-correo:email,
-fechaRegistro:Date.now()
+nombre: nombre,
+correo: email,
+fechaRegistro: Date.now()
 });
-
-alert('Cuenta creada');
-
+alert('Cuenta creada correctamente');
 })
 .catch((error)=>{
-alert(error.message);
+alert('Error: '+error.message);
 });
-
 }
 
+// Iniciar sesión
 function iniciarSesion(){
-
 const email=document.getElementById('loginEmail').value;
 const pass=document.getElementById('loginPass').value;
 
@@ -303,33 +305,32 @@ alert('Sesión iniciada');
 cerrarLogin();
 })
 .catch((error)=>{
-alert(error.message);
+alert('Error: '+error.message);
 });
-
 }
 
+// Publicar nueva oferta
 function publicarOferta(){
-
 const titulo=document.getElementById('titulo').value;
 const caracteristicas=document.getElementById('caracteristicas').value;
 const valor=document.getElementById('valor').value;
 const contacto=document.getElementById('contacto').value;
 const categoria=document.getElementById('categoria').value;
 
+// Guardar publicación en la base de datos
 db.ref('publicaciones').push({
-titulo,
-caracteristicas,
-valor,
-contacto,
-categoria,
-fecha:Date.now(),
-fechaExpiracion:Date.now() + (3*24*60*60*1000)
+titulo: titulo,
+caracteristicas: caracteristicas,
+valor: valor,
+contacto: contacto,
+categoria: categoria,
+fecha: Date.now(),
+fechaExpiracion: Date.now() + (3*24*60*60*1000) // 3 días de vigencia
 })
 .then(()=>{
-alert('Oferta publicada');
+alert('Oferta publicada correctamente');
 cerrarPublicar();
 });
-
 }
 
 </script>
