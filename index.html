@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ofertas Santa Rosa</title>
 
-<!-- Librerías cargadas correctamente -->
+<!-- Librerías Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
@@ -54,7 +54,7 @@ font-size:12px;
 margin-bottom:10px;
 }
 
-/* BOTONES */
+/* Estilos Botones */
 .btn-login{
 border:none;
 padding:8px 16px;
@@ -106,7 +106,7 @@ background:#e3c74b;
 border:none;
 }
 
-/* MODALES */
+/* Estilos Modales */
 .modal{
 display:none;
 position:fixed;
@@ -475,7 +475,5 @@ function enviarCorreoRecuperacion(){
     return;
   }
   auth.sendPasswordResetEmail(email)
-  .then(() => {
-    alert("✅ Enlace enviado, revisa tu correo");
-    cerrarOlv
+  .
   
