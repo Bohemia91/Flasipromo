@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ofertas Santa Rosa</title>
 
-<!-- Librerías de Firebase -->
+<!-- Librerías Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
@@ -129,6 +129,16 @@ font-size:14px;
 .cerrar{
 float:right;
 font-size:24px;
+cursor:pointer;
+}
+
+.enlace-olvido{
+text-align:center;
+margin-top:10px;
+color:#056b1f;
+font-size:13px;
+cursor:pointer;
+text-decoration:underline;
 }
 
 </style>
@@ -164,6 +174,7 @@ Iniciar Sesión
 
 </div>
 
+<!-- MODAL LOGIN / REGISTRO / RECUPERAR -->
 <div class="modal" id="modalLogin">
 <div class="modal-contenido">
 
@@ -178,13 +189,16 @@ Iniciar Sesión
 Entrar
 </button>
 
+<!-- NUEVO ENLACE DE RECUPERACIÓN -->
+<p class="enlace-olvido" onclick="mostrarOlvido()">¿Olvidaste tu contraseña?</p>
+
 <hr style="margin:18px 0;">
 
 <h2>Crear cuenta</h2>
 
-<input type="text" id="regNombre" placeholder="Nombre">
-<input type="email" id="regEmail" placeholder="Correo">
-<input type="password" id="regPass" placeholder="Contraseña">
+<input type="text" id="regNombre" placeholder="Nombre completo">
+<input type="email" id="regEmail" placeholder="Correo electrónico">
+<input type="password" id="regPass" placeholder="Contraseña (mínimo 6 caracteres)">
 
 <button class="btn-enviar" onclick="registrarUsuario()">
 Crear cuenta
@@ -193,6 +207,25 @@ Crear cuenta
 </div>
 </div>
 
+<!-- MODAL RECUPERAR CONTRASEÑA -->
+<div class="modal" id="modalOlvido">
+<div class="modal-contenido">
+
+<span class="cerrar" onclick="cerrarOlvido()">×</span>
+
+<h2>Recuperar contraseña</h2>
+<p style="font-size:13px; margin-bottom:15px;">Ingresa tu correo y te enviaremos un enlace para cambiar tu contraseña</p>
+
+<input type="email" id="correoRecuperar" placeholder="Tu correo electrónico">
+
+<button class="btn-enviar" onclick="enviarCorreoRecuperacion()">
+Enviar enlace
+</button>
+
+</div>
+</div>
+
+<!-- MODAL PUBLICAR -->
 <div class="modal" id="modalPublicar">
 <div class="modal-contenido">
 
@@ -219,11 +252,11 @@ Publicar
 </div>
 
 <script>
-// 👇 AQUÍ ESTÁ TU CONFIGURACIÓN DE FIREBASE ACTUALIZADA 👇
+// ✅ TU CONFIGURACIÓN DE FIREBASE CORRECTA Y COMPLETA
 const firebaseConfig = {
   apiKey: "AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
   authDomain: "flasipromo.firebaseapp.com",
-  databaseURL: "https://flasipromo.firebaseio.com",
+  databaseURL: "https://flasipromo-default-rtdb.firebaseio.com",
   projectId: "flasipromo",
   storageBucket: "flasipromo.firebasestorage.app",
   messagingSenderId: "439920052201",
@@ -234,21 +267,20 @@ const firebaseConfig = {
 // Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Referencias a los servicios
+// Servicios activos
 const db = firebase.database();
 const auth = firebase.auth();
-
 let usuarioActual = null;
 
-// Mantener sesión iniciada
+// Mantener sesión activa
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-// Detectar cuando cambia el estado de la sesión
-auth.onAuthStateChanged((usuario)=>{
-usuarioActual = usuario;
+// Detectar si hay usuario conectado
+auth.onAuthStateChanged((usuario) => {
+  usuarioActual = usuario;
 });
 
-// Funciones del menú
+// --- FUNCIONES ---
 function abrirCategoria(categoria){
 window.location.href=`categoria.html?categoria=${categoria}`;
 }
@@ -261,11 +293,21 @@ function cerrarLogin(){
 document.getElementById('modalLogin').style.display='none';
 }
 
+// NUEVO: Mostrar modal de olvido
+function mostrarOlvido(){
+cerrarLogin();
+document.getElementById('modalOlvido').style.display='block';
+}
+
+function cerrarOlvido(){
+document.getElementById('modalOlvido').style.display='none';
+}
+
 function mostrarPublicar(){
 if(usuarioActual){
 document.getElementById('modalPublicar').style.display='block';
 }else{
-alert('Debes iniciar sesión');
+alert('Debes iniciar sesión primero');
 }
 }
 
@@ -273,62 +315,84 @@ function cerrarPublicar(){
 document.getElementById('modalPublicar').style.display='none';
 }
 
-// Registrar nuevo usuario
+// ✅ REGISTRAR USUARIO (CORREGIDO Y FUNCIONAL)
 function registrarUsuario(){
-const nombre=document.getElementById('regNombre').value;
-const email=document.getElementById('regEmail').value;
-const pass=document.getElementById('regPass').value;
+const nombre = document.getElementById('regNombre').value;
+const email = document.getElementById('regEmail').value;
+const pass = document.getElementById('regPass').value;
 
-auth.createUserWithEmailAndPassword(email,pass)
-.then((cred)=>{
-// Guardar datos del usuario en la base de datos
-db.ref('usuarios/'+cred.user.uid).set({
+// Validación mínima
+if(pass.length < 6) return alert("⚠️ La contraseña debe tener al menos 6 caracteres");
+
+auth.createUserWithEmailAndPassword(email, pass)
+.then((cred) => {
+// Guardar datos en la base de datos
+return db.ref('usuarios/' + cred.user.uid).set({
 nombre: nombre,
 correo: email,
-fechaRegistro: Date.now()
+fechaRegistro: firebase.database.ServerValue.TIMESTAMP
 });
-alert('Cuenta creada correctamente');
 })
-.catch((error)=>{
-alert('Error: '+error.message);
-});
-}
-
-// Iniciar sesión
-function iniciarSesion(){
-const email=document.getElementById('loginEmail').value;
-const pass=document.getElementById('loginPass').value;
-
-auth.signInWithEmailAndPassword(email,pass)
-.then(()=>{
-alert('Sesión iniciada');
+.then(() => {
+alert("✅ Cuenta creada con éxito! Ya puedes entrar.");
 cerrarLogin();
 })
-.catch((error)=>{
-alert('Error: '+error.message);
+.catch((error) => {
+alert("❌ Error: " + error.message);
 });
 }
 
-// Publicar nueva oferta
-function publicarOferta(){
-const titulo=document.getElementById('titulo').value;
-const caracteristicas=document.getElementById('caracteristicas').value;
-const valor=document.getElementById('valor').value;
-const contacto=document.getElementById('contacto').value;
-const categoria=document.getElementById('categoria').value;
+// ✅ INICIAR SESIÓN (CORREGIDO)
+function iniciarSesion(){
+const email = document.getElementById('loginEmail').value;
+const pass = document.getElementById('loginPass').value;
 
-// Guardar publicación en la base de datos
-db.ref('publicaciones').push({
-titulo: titulo,
-caracteristicas: caracteristicas,
-valor: valor,
-contacto: contacto,
-categoria: categoria,
-fecha: Date.now(),
-fechaExpiracion: Date.now() + (3*24*60*60*1000) // 3 días de vigencia
+auth.signInWithEmailAndPassword(email, pass)
+.then(() => {
+alert("✅ Sesión iniciada correctamente");
+cerrarLogin();
 })
-.then(()=>{
-alert('Oferta publicada correctamente');
+.catch((error) => {
+alert("❌ Error: " + error.message);
+});
+}
+
+// ✅ FUNCIÓN DE RECUPERACIÓN DE CONTRASEÑA
+function enviarCorreoRecuperacion(){
+const email = document.getElementById('correoRecuperar').value;
+
+if(!email){
+alert("⚠️ Ingresa tu correo electrónico");
+return;
+}
+
+auth.sendPasswordResetEmail(email)
+.then(() => {
+alert("✅ Se ha enviado un enlace a tu correo para restablecer la contraseña");
+cerrarOlvido();
+})
+.catch((error) => {
+alert("❌ Error: " + error.message);
+});
+}
+
+// ✅ PUBLICAR OFERTA
+function publicarOferta(){
+if(!usuarioActual) return alert("⚠️ Debes iniciar sesión");
+
+const datos = {
+titulo: document.getElementById('titulo').value,
+descripcion: document.getElementById('caracteristicas').value,
+precio: document.getElementById('valor').value,
+contacto: document.getElementById('contacto').value,
+categoria: document.getElementById('categoria').value,
+autorId: usuarioActual.uid,
+fecha: firebase.database.ServerValue.TIMESTAMP
+};
+
+db.ref('publicaciones').push(datos)
+.then(() => {
+alert("✅ Oferta publicada!");
 cerrarPublicar();
 });
 }
