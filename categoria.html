@@ -97,6 +97,13 @@ color:white;
 font-weight:bold;
 }
 
+.vacio{
+text-align:center;
+color:#666;
+margin-top:50px;
+padding:20px;
+}
+
 </style>
 </head>
 <body>
@@ -120,16 +127,21 @@ placeholder="Buscar productos...">
 
 <div class="lista" id="listaProductos"></div>
 
+<div class="vacio" id="mensajeVacio" style="display:none;">
+<h3>😕 Todavía no hay anuncios en esta categoría</h3>
+</div>
+
 <script>
 
+// ✅ TUS DATOS REALES DE FIREBASE (YA LOS PUSE YO)
 const firebaseConfig = {
-apiKey:"TU_API_KEY",
-authDomain:"TU_DOMINIO.firebaseapp.com",
-databaseURL:"https://TU_URL_DATABASE.firebaseio.com",
-projectId:"TU_ID_PROYECTO",
-storageBucket:"TU_BUCKET.appspot.com",
-messagingSenderId:"TU_SENDER_ID",
-appId:"TU_APP_ID"
+apiKey:"AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
+authDomain:"flasipromo.firebaseapp.com",
+databaseURL:"https://flasipromo-default-rtdb.firebaseio.com",
+projectId:"flasipromo",
+storageBucket:"flasipromo.appspot.com",
+messagingSenderId:"439920052201",
+appId:"1:439920052201:ddf170b3be99b732cced78"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -137,11 +149,10 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 const parametros = new URLSearchParams(window.location.search);
-
-const categoria = parametros.get('categoria');
+const categoria = parametros.get('categoria'); // ej: "nuevos", "segunda", "servicios"
 
 const lista = document.getElementById('listaProductos');
-
+const mensajeVacio = document.getElementById('mensajeVacio');
 const buscador = document.getElementById('busqueda');
 
 let productos = [];
@@ -149,17 +160,23 @@ let productos = [];
 function renderizar(listaProductos){
 
 lista.innerHTML='';
+mensajeVacio.style.display = 'none';
+
+if(listaProductos.length === 0){
+mensajeVacio.style.display = 'block';
+return;
+}
 
 listaProductos.forEach(producto=>{
 
 const tarjeta=document.createElement('div');
-
 tarjeta.className='tarjeta';
 
 tarjeta.innerHTML=`
-<h3>${producto.titulo}</h3>
-<p>${producto.caracteristicas}</p>
-<div class="precio">$${producto.valor}</div>
+<h3>${producto.titulo || 'Sin título'}</h3>
+<p>${producto.descripcion || 'Sin descripción'}</p>
+<div class="precio">$${producto.valor || '0'}</div>
+<p><strong>Contacto:</strong> ${producto.contacto || 'Sin dato'}</p>
 
 <button class="btn-detalle"
 onclick="verDetalle('${producto.id}')">
@@ -174,10 +191,12 @@ lista.appendChild(tarjeta);
 }
 
 function verDetalle(id){
-window.location.href=`detalle.html?id=${id}`;
+alert("Aquí iría la página de detalles con el ID: " + id);
+// cuando quieras, creamos el archivo detalle.html
 }
 
-db.ref('publicaciones').on('value',(datos)=>{
+// ✅ CORREGIDO: LEEMOS DE DONDE SE ESTÁN GUARDANDO LOS DATOS
+db.ref('ofertas/' + categoria).on('value',(datos)=>{
 
 productos=[];
 
@@ -186,34 +205,27 @@ if(datos.exists()){
 datos.forEach((hijo)=>{
 
 const producto=hijo.val();
-
 producto.id=hijo.key;
 
-if(
-producto.categoria===categoria &&
-producto.fechaExpiracion > Date.now()
-){
-
+// ✅ Ya no filtramos por fechaExpiracion porque no lo usamos
 productos.push(producto);
-
-}
 
 });
 
-renderizar(productos);
+// Ordenamos del más nuevo al más viejo
+productos.sort((a,b) => b.fecha - a.fecha);
 
 }
+
+renderizar(productos);
 
 });
 
 buscador.addEventListener('input',()=>{
 
 const texto=buscador.value.toLowerCase();
-
 const filtrados=productos.filter(producto=>
-
-producto.titulo.toLowerCase().includes(texto)
-
+(producto.titulo || "").toLowerCase().includes(texto)
 );
 
 renderizar(filtrados);
