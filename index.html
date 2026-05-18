@@ -106,7 +106,8 @@ Iniciar con Google
 
 <input type="text" id="titulo" placeholder="Título">
 <textarea id="caracteristicas" placeholder="Descripción"></textarea>
-<input type="number" id="valor" placeholder="Precio">
+<!-- ✅ CAMBIO A TIPO TEXT -->
+<input type="text" id="valor" placeholder="Precio" inputmode="numeric">
 <input type="text" id="contacto" placeholder="Contacto">
 <input type="file" id="imagenOferta" accept="image/*">
 
@@ -137,6 +138,8 @@ firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
 const auth=firebase.auth();
 const storage=firebase.storage();
+
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 let usuarioActual=null;
 
@@ -324,8 +327,15 @@ const contacto=document.getElementById('contacto').value.trim();
 const categoria=document.getElementById('categoria').value;
 const archivo=document.getElementById('imagenOferta').files[0];
 
-if(!titulo||!descripcion||!valor||!contacto){
-alert("⚠️ Completa todos los campos");
+// ✅ NUEVA VALIDACIÓN COMPLETA
+if(!titulo||!descripcion||!valor||!contacto||!categoria){
+alert("⚠️ Completa todos los campos y selecciona una categoría");
+return;
+}
+
+const valorNumerico = parseFloat(valor);
+if(isNaN(valorNumerico) || valorNumerico <= 0){
+alert("⚠️ Escribe un precio válido mayor a 0");
 return;
 }
 
@@ -336,7 +346,7 @@ function guardarOferta(urlImagen){
 db.ref(`ofertas/${categoria}/${idOferta}`).set({
 titulo:titulo,
 descripcion:descripcion,
-valor:valor,
+valor:valorNumerico,
 contacto:contacto,
 categoria:categoria,
 imagen:urlImagen||"",
@@ -347,7 +357,7 @@ fecha:Date.now()
 
 .then(()=>{
 
-alert("✅ Oferta publicada");
+alert("✅ Oferta publicada correctamente");
 
 document.getElementById('titulo').value='';
 document.getElementById('caracteristicas').value='';
@@ -360,14 +370,15 @@ cerrarPublicar();
 })
 
 .catch((error)=>{
-alert("❌ Error guardando: "+error.message);
+alert("❌ Error al guardar: "+error.message);
 });
 
 }
 
 if(archivo){
 
-const referencia=storage.ref("ofertas/"+idOferta+"_"+archivo.name);
+const nombreLimpio = archivo.name.replace(/[^a-zA-Z0-9.]/g, "_");
+const referencia=storage.ref("ofertas/"+idOferta+"_"+nombreLimpio);
 
 referencia.put(archivo)
 
@@ -378,7 +389,7 @@ guardarOferta(url);
 })
 
 .catch((error)=>{
-alert("❌ Error subiendo imagen: "+error.message);
+alert("❌ Error al subir la imagen: "+error.message);
 });
 
 }else{
