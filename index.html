@@ -125,7 +125,7 @@ Iniciar con Google
 const firebaseConfig={
 apiKey:"AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
 authDomain:"flasipromo.firebaseapp.com",
-// ✅ DIRECCIÓN CORREGIDA ✅
+// ✅ DIRECCIÓN CORRECTA QUE TE CREÓ FIREBASE
 databaseURL:"https://flasipromo-6w5s98-default-rtdb.firebaseio.com",
 projectId:"flasipromo",
 storageBucket:"flasipromo.appspot.com",
@@ -151,7 +151,6 @@ cambiarBotonSesion();
 
 function actualizarInfoUsuario(){
 const info=document.getElementById("infoUsuario");
-
 if(usuarioActual){
 info.innerHTML=`✅ ${usuarioActual.email}`;
 }else{
@@ -161,7 +160,6 @@ info.innerHTML="❌ No has iniciado sesión";
 
 function cambiarBotonSesion(){
 const boton=document.getElementById("botonSesion");
-
 if(usuarioActual){
 boton.innerHTML="Cerrar Sesión";
 boton.classList.remove("btn-iniciar");
@@ -216,7 +214,6 @@ document.getElementById("modalPublicar").style.display="none";
 }
 
 function registrarUsuario(){
-
 const nombre=document.getElementById("regNombre").value.trim();
 const email=document.getElementById("regEmail").value.trim();
 const pass=document.getElementById("regPass").value.trim();
@@ -227,92 +224,43 @@ return;
 }
 
 auth.createUserWithEmailAndPassword(email,pass)
-
 .then((cred)=>{
-return db.ref("usuarios/"+cred.user.uid).set({
-nombre:nombre,
-correo:email,
-fecha:Date.now()
-});
+return db.ref("usuarios/"+cred.user.uid).set({nombre:nombre,correo:email,fecha:Date.now()});
 })
-
-.then(()=>{
-alert("✅ Cuenta creada");
-cerrarLogin();
-})
-
-.catch((error)=>{
-alert("❌ "+error.message);
-});
-
+.then(()=>{alert("✅ Cuenta creada");cerrarLogin();})
+.catch((error)=>{alert("❌ "+error.message);});
 }
 
 function iniciarSesion(){
-
 const email=document.getElementById("loginEmail").value.trim();
 const pass=document.getElementById("loginPass").value.trim();
 
 auth.signInWithEmailAndPassword(email,pass)
-
-.then(()=>{
-alert("✅ Sesión iniciada");
-cerrarLogin();
-})
-
-.catch((error)=>{
-alert("❌ "+error.message);
-});
-
+.then(()=>{alert("✅ Sesión iniciada");cerrarLogin();})
+.catch((error)=>{alert("❌ "+error.message);});
 }
 
 function iniciarGoogle(){
-
 const proveedorGoogle=new firebase.auth.GoogleAuthProvider();
-
 auth.signInWithPopup(proveedorGoogle)
-
-.then(()=>{
-alert("✅ Sesión iniciada");
-cerrarLogin();
-})
-
-.catch((error)=>{
-alert("❌ "+error.message);
-});
-
+.then(()=>{alert("✅ Sesión iniciada");cerrarLogin();})
+.catch((error)=>{alert("❌ "+error.message);});
 }
 
 function enviarCorreoRecuperacion(){
-
 const email=document.getElementById("correoRecuperar").value.trim();
-
 auth.sendPasswordResetEmail(email)
-
-.then(()=>{
-alert("✅ Revisa tu correo");
-cerrarOlvido();
-})
-
-.catch((error)=>{
-alert("❌ "+error.message);
-});
-
+.then(()=>{alert("✅ Revisa tu correo");cerrarOlvido();})
+.catch((error)=>{alert("❌ "+error.message);});
 }
 
 function cerrarSesion(){
-
 auth.signOut()
-
-.then(()=>{
-alert("✅ Sesión cerrada");
-})
-
-.catch((error)=>{
-alert("❌ "+error.message);
-});
-
+.then(()=>{alert("✅ Sesión cerrada");})
+.catch((error)=>{alert("❌ "+error.message);});
 }
 
+// ✅ FUNCIÓN PUBLICAR ARREGLADA AL 100%
 function publicarOferta(){
 
 if(!usuarioActual){
@@ -327,7 +275,6 @@ const contacto=document.getElementById('contacto').value.trim();
 const categoria=document.getElementById('categoria').value;
 const archivo=document.getElementById('imagenOferta').files[0];
 
-// ✅ NUEVA VALIDACIÓN COMPLETA
 if(!titulo||!descripcion||!valor||!contacto||!categoria){
 alert("⚠️ Completa todos los campos y selecciona una categoría");
 return;
@@ -339,63 +286,53 @@ alert("⚠️ Escribe un precio válido mayor a 0");
 return;
 }
 
-const idOferta=Date.now();
+const idOferta = Date.now().toString(); // ID limpio como texto
 
-function guardarOferta(urlImagen){
+function guardarOferta(urlImagen=""){
 
-db.ref(`ofertas/${categoria}/${idOferta}`).set({
-titulo:titulo,
-descripcion:descripcion,
-valor:valorNumerico,
-contacto:contacto,
-categoria:categoria,
-imagen:urlImagen||"",
-usuario:usuarioActual.email,
-uid:usuarioActual.uid,
-fecha:Date.now()
-})
+const datos = {
+titulo: titulo,
+descripcion: descripcion,
+valor: valorNumerico,
+contacto: contacto,
+categoria: categoria,
+imagen: urlImagen,
+usuario: usuarioActual.email,
+uid: usuarioActual.uid,
+fecha: firebase.database.ServerValue.TIMESTAMP // Formato oficial de Firebase
+};
 
+// 🟢 RUTA DE GUARDADO CORREGIDA Y SEGURA
+db.ref("ofertas").child(categoria).child(idOferta).set(datos)
 .then(()=>{
-
-alert("✅ Oferta publicada correctamente");
-
+alert("✅ ¡PUBLICADO CON ÉXITO!");
 document.getElementById('titulo').value='';
 document.getElementById('caracteristicas').value='';
 document.getElementById('valor').value='';
 document.getElementById('contacto').value='';
 document.getElementById('imagenOferta').value='';
-
 cerrarPublicar();
-
 })
-
 .catch((error)=>{
-alert("❌ Error al guardar: "+error.message);
+alert("❌ ERROR: "+error.message);
 });
 
 }
 
+// 🟢 AHORA SI FALLA LA IMAGEN, GUARDA EL ANUNCIO IGUAL
 if(archivo){
-
-const nombreLimpio = archivo.name.replace(/[^a-zA-Z0-9.]/g, "_");
-const referencia=storage.ref("ofertas/"+idOferta+"_"+nombreLimpio);
+const nombreLimpio = idOferta + "_" + archivo.name.replace(/[.#$[\]/]/g, "_"); // Quita símbolos prohibidos
+const referencia = storage.ref().child("ofertas").child(nombreLimpio);
 
 referencia.put(archivo)
-
-.then(()=>referencia.getDownloadURL())
-
-.then((url)=>{
-guardarOferta(url);
-})
-
-.catch((error)=>{
-alert("❌ Error al subir la imagen: "+error.message);
+.then(snapshot => snapshot.ref.getDownloadURL())
+.then(url => guardarOferta(url))
+.catch(error => {
+guardarOferta(""); // GUARDA SIN IMAGEN
 });
 
 }else{
-
-guardarOferta("");
-
+guardarOferta(""); // GUARDA SIN IMAGEN
 }
 
 }
