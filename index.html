@@ -125,8 +125,8 @@ Iniciar con Google
 const firebaseConfig={
 apiKey:"AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
 authDomain:"flasipromo.firebaseapp.com",
-// ✅ DIRECCIÓN CORRECTA QUE TE CREÓ FIREBASE
-databaseURL:"https://flasipromo-6w5s98-default-rtdb.firebaseio.com",
+// ✅ TU DIRECCIÓN EXACTA Y CORRECTA:
+databaseURL:"https://flasipromo-default-rtdb.firebaseio.com/",
 projectId:"flasipromo",
 storageBucket:"flasipromo.appspot.com",
 messagingSenderId:"439920052201",
@@ -260,7 +260,7 @@ auth.signOut()
 .catch((error)=>{alert("❌ "+error.message);});
 }
 
-// ✅ FUNCIÓN PUBLICAR ARREGLADA AL 100%
+// ✅ FUNCIÓN PUBLICAR ARREGLADA CON TU DIRECCIÓN
 function publicarOferta(){
 
 if(!usuarioActual){
@@ -286,7 +286,7 @@ alert("⚠️ Escribe un precio válido mayor a 0");
 return;
 }
 
-const idOferta = Date.now().toString(); // ID limpio como texto
+const idOferta = Date.now().toString();
 
 function guardarOferta(urlImagen=""){
 
@@ -299,11 +299,10 @@ categoria: categoria,
 imagen: urlImagen,
 usuario: usuarioActual.email,
 uid: usuarioActual.uid,
-fecha: firebase.database.ServerValue.TIMESTAMP // Formato oficial de Firebase
+fecha: firebase.database.ServerValue.TIMESTAMP
 };
 
-// 🟢 RUTA DE GUARDADO CORREGIDA Y SEGURA
-db.ref("ofertas").child(categoria).child(idOferta).set(datos)
+db.ref("ofertas/" + categoria + "/" + idOferta).set(datos)
 .then(()=>{
 alert("✅ ¡PUBLICADO CON ÉXITO!");
 document.getElementById('titulo').value='';
@@ -319,20 +318,19 @@ alert("❌ ERROR: "+error.message);
 
 }
 
-// 🟢 AHORA SI FALLA LA IMAGEN, GUARDA EL ANUNCIO IGUAL
 if(archivo){
-const nombreLimpio = idOferta + "_" + archivo.name.replace(/[.#$[\]/]/g, "_"); // Quita símbolos prohibidos
-const referencia = storage.ref().child("ofertas").child(nombreLimpio);
+const nombreLimpio = idOferta + "_" + archivo.name.replace(/[.#$[\]/]/g, "_");
+const referencia = storage.ref("ofertas/" + nombreLimpio);
 
 referencia.put(archivo)
 .then(snapshot => snapshot.ref.getDownloadURL())
 .then(url => guardarOferta(url))
 .catch(error => {
-guardarOferta(""); // GUARDA SIN IMAGEN
+guardarOferta("");
 });
 
 }else{
-guardarOferta(""); // GUARDA SIN IMAGEN
+guardarOferta("");
 }
 
 }
