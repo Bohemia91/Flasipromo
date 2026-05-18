@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ofertas Santa Rosa</title>
 
-<!-- Librerías Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+<!-- Librerías cargadas de forma rápida -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js" defer></script>
 
 <style>
 *{
@@ -20,15 +20,14 @@ font-family:Arial,sans-serif;
 }
 body{
 background:#f3f3f3;
-height:100vh;
-overflow:hidden;
+min-height:100vh;
 display:flex;
 flex-direction:column;
 }
 .encabezado{
 background:#056b1f;
 color:white;
-padding:18px 10px;
+padding:15px 10px;
 text-align:center;
 position:relative;
 }
@@ -55,13 +54,18 @@ font-size:12px;
 margin-bottom:10px;
 }
 
+/* BOTONES */
 .btn-login{
 border:none;
-padding:9px 18px;
+padding:8px 16px;
 border-radius:12px;
 font-size:13px;
 font-weight:bold;
 cursor:pointer;
+transition:0.2s;
+}
+.btn-login:hover{
+opacity:0.9;
 }
 .btn-iniciar{
 background:white;
@@ -79,23 +83,30 @@ flex-direction:column;
 justify-content:center;
 align-items:center;
 gap:12px;
-padding:12px;
+padding:20px 15px;
 }
 .btn-menu{
 width:100%;
-max-width:270px;
-padding:14px;
+max-width:280px;
+padding:15px;
 border-radius:16px;
 background:white;
 border:3px solid #056b1f;
 font-size:15px;
 font-weight:bold;
 color:#056b1f;
+cursor:pointer;
+transition:0.2s;
+}
+.btn-menu:hover{
+background:#f0f8f2;
 }
 .btn-publicar{
 background:#e3c74b;
 border:none;
 }
+
+/* MODALES */
 .modal{
 display:none;
 position:fixed;
@@ -107,28 +118,41 @@ background:rgba(0,0,0,0.6);
 padding:15px;
 z-index:10;
 overflow-y:auto;
+animation:aparecer 0.2s;
+}
+@keyframes aparecer{
+from{opacity:0;}
+to{opacity:1;}
 }
 .modal-contenido{
 background:white;
 max-width:350px;
 margin:40px auto;
-padding:20px;
+padding:25px;
 border-radius:18px;
 position:relative;
+animation:bajar 0.2s;
+}
+@keyframes bajar{
+from{transform:translateY(-20px);}
+to{transform:translateY(0);}
 }
 .modal h2{
 font-size:18px;
-margin-bottom:15px;
+margin-bottom:20px;
 color:#056b1f;
 }
-input,textarea,select,input[type="file"]{
+input,textarea,select{
 width:100%;
 padding:12px;
 margin-bottom:12px;
 border-radius:12px;
-border:1px solid #ccc;
+border:1px solid #ddd;
 font-size:14px;
 }
+textarea{resize:vertical; min-height:80px;}
+input[type="file"]{border:none; padding:5px 0;}
+
 .btn-enviar{
 width:100%;
 padding:13px;
@@ -139,12 +163,19 @@ color:white;
 font-weight:bold;
 font-size:14px;
 cursor:pointer;
+transition:0.2s;
+}
+.btn-enviar:hover{
+background:#04551a;
 }
 .cerrar{
 float:right;
 font-size:24px;
 cursor:pointer;
+color:#666;
 }
+.cerrar:hover{color:#000;}
+
 .enlace-olvido{
 text-align:center;
 margin-top:10px;
@@ -153,11 +184,13 @@ font-size:13px;
 cursor:pointer;
 text-decoration:underline;
 }
+.enlace-olvido:hover{color:#04551a;}
+
 .btn-google{
 width:100%;
 padding:12px;
 border-radius:12px;
-border:1px solid #ccc;
+border:1px solid #ddd;
 background:white;
 color:#333;
 font-weight:bold;
@@ -168,7 +201,11 @@ display:flex;
 align-items:center;
 justify-content:center;
 gap:8px;
+transition:0.2s;
 }
+.btn-google:hover{background:#f8f8f8;}
+
+hr{margin:20px 0; border:none; border-top:1px solid #eee;}
 </style>
 </head>
 <body>
@@ -189,7 +226,7 @@ gap:8px;
 <button class="btn-menu btn-publicar" onclick="mostrarPublicar()">📝 Publicar oferta</button>
 </div>
 
-<!-- MODAL LOGIN / REGISTRO -->
+<!-- MODAL INICIO SESIÓN -->
 <div class="modal" id="modalLogin">
 <div class="modal-contenido">
 <span class="cerrar" onclick="cerrarLogin()">×</span>
@@ -199,16 +236,17 @@ gap:8px;
 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Iniciar con Google
 </button>
 
-<hr style="margin:15px 0;">
+<hr>
 
-<input type="email" id="loginEmail" placeholder="Correo">
-<input type="password" id="loginPass" placeholder="Contraseña">
+<input type="email" id="loginEmail" placeholder="Correo" autocomplete="email">
+<input type="password" id="loginPass" placeholder="Contraseña" type="password" autocomplete="current-password">
 <button class="btn-enviar" onclick="iniciarSesion()">Entrar</button>
+
 <p class="enlace-olvido" onclick="mostrarOlvido()">¿Olvidaste tu contraseña?</p>
 
-<hr style="margin:18px 0;">
+<hr>
 <h2>Crear cuenta</h2>
-<input type="text" id="regNombre" placeholder="Nombre">
+<input type="text" id="regNombre" placeholder="Nombre completo">
 <input type="email" id="regEmail" placeholder="Correo">
 <input type="password" id="regPass" placeholder="Contraseña (mínimo 6 caracteres)">
 <button class="btn-enviar" onclick="registrarUsuario()">Crear cuenta</button>
@@ -232,12 +270,12 @@ gap:8px;
 <span class="cerrar" onclick="cerrarPublicar()">×</span>
 <h2>Publicar oferta</h2>
 
-<input type="text" id="titulo" placeholder="Título" value="Celular gama media">
-<textarea id="caracteristicas" placeholder="Descripción" rows="4">Económico, poco uso</textarea>
-<input type="number" id="valor" placeholder="Precio" value="150000">
-<input type="text" id="contacto" placeholder="Contacto" value="3005554433">
+<input type="text" id="titulo" placeholder="Título de la oferta" value="Celular gama media">
+<textarea id="caracteristicas" placeholder="Descripción y detalles" rows="4">Económico, poco uso, en buen estado</textarea>
+<input type="number" id="valor" placeholder="Precio" value="150000" min="0">
+<input type="text" id="contacto" placeholder="Número de contacto" value="3005554433">
 
-<p style="font-size:14px; font-weight:bold; color:#056b1f; margin-bottom:8px;">📸 Foto de la oferta (opcional):</p>
+<p style="font-size:14px; font-weight:bold; color:#056b1f; margin:10px 0 5px;">📸 Foto de la oferta (opcional):</p>
 <input type="file" id="imagenOferta" accept="image/*">
 
 <select id="categoria">
@@ -246,7 +284,7 @@ gap:8px;
 <option value="servicios">Servicios</option>
 </select>
 
-<button class="btn-enviar" onclick="publicarOferta()">Publicar</button>
+<button class="btn-enviar" onclick="publicarOferta()">Publicar ahora</button>
 </div>
 </div>
 
@@ -284,11 +322,8 @@ auth.onAuthStateChanged((usuario) => {
 function actualizarInfoUsuario(){
   const elementoInfo = document.getElementById("infoUsuario");
   if(usuarioActual){
-    if(usuarioActual.providerData[0].providerId === "google.com"){
-      elementoInfo.innerHTML = `✅ Conectado como: <b>${usuarioActual.displayName}</b>`;
-    } else {
-      elementoInfo.innerHTML = `✅ Conectado como: <b>${usuarioActual.email}</b>`;
-    }
+    const nombre = usuarioActual.displayName || usuarioActual.email;
+    elementoInfo.innerHTML = `✅ Conectado como: <b>${nombre}</b>`;
     elementoInfo.style.background = "#e3c74b";
     elementoInfo.style.color = "#056b1f";
   } else {
@@ -298,7 +333,7 @@ function actualizarInfoUsuario(){
   }
 }
 
-// CAMBIAR BOTÓN DE INICIAR/CERRAR SESIÓN
+// CAMBIAR BOTÓN DE INICIAR / CERRAR SESIÓN
 function cambiarBotonSesion(){
   const boton = document.getElementById("botonSesion");
   if(usuarioActual){
@@ -312,7 +347,7 @@ function cambiarBotonSesion(){
   }
 }
 
-// ACCIÓN DEL BOTÓN (INICIAR O CERRAR)
+// ACCIÓN DEL BOTÓN
 function accionSesion(){
   if(usuarioActual){
     cerrarSesion();
@@ -323,160 +358,104 @@ function accionSesion(){
 
 // FUNCIONES BÁSICAS
 function abrirCategoria(categoria){
-window.location.href=`categoria.html?categoria=${categoria}`;
+  window.location.href = `categoria.html?categoria=${categoria}`;
 }
 function abrirLogin(){
-document.getElementById('modalLogin').style.display='block';
+  document.getElementById('modalLogin').style.display = 'block';
 }
 function cerrarLogin(){
-document.getElementById('modalLogin').style.display='none';
+  document.getElementById('modalLogin').style.display = 'none';
 }
 function mostrarOlvido(){
-cerrarLogin();
-document.getElementById('modalOlvido').style.display='block';
+  cerrarLogin();
+  document.getElementById('modalOlvido').style.display = 'block';
 }
 function cerrarOlvido(){
-document.getElementById('modalOlvido').style.display='none';
+  document.getElementById('modalOlvido').style.display = 'none';
 }
 function mostrarPublicar(){
-if(usuarioActual){
-document.getElementById('modalPublicar').style.display='block';
-}else{
-alert('Debes iniciar sesión primero para publicar');
-}
+  if(usuarioActual){
+    document.getElementById('modalPublicar').style.display = 'block';
+  } else {
+    alert('Debes iniciar sesión primero para publicar ofertas');
+    abrirLogin();
+  }
 }
 function cerrarPublicar(){
-document.getElementById('modalPublicar').style.display='none';
+  document.getElementById('modalPublicar').style.display = 'none';
 }
 
 // CERRAR SESIÓN
 function cerrarSesion(){
-auth.signOut().then(() => {
-alert("✅ Sesión cerrada correctamente");
-actualizarInfoUsuario();
-cambiarBotonSesion();
-}).catch((error) => {
-alert("❌ Error al cerrar sesión: " + error.message);
-});
+  if(confirm("¿Seguro que quieres cerrar sesión?")){
+    auth.signOut().then(() => {
+      alert("✅ Sesión cerrada correctamente");
+      actualizarInfoUsuario();
+      cambiarBotonSesion();
+    }).catch((error) => {
+      alert("❌ Error: " + error.message);
+    });
+  }
 }
 
 // REGISTRAR USUARIO
 function registrarUsuario(){
-const nombre = document.getElementById('regNombre').value;
-const email = document.getElementById('regEmail').value;
-const pass = document.getElementById('regPass').value;
+  const nombre = document.getElementById('regNombre').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass = document.getElementById('regPass').value.trim();
 
-if(pass.length < 6) {
-alert("⚠️ La contraseña debe tener al menos 6 caracteres");
-return;
-}
+  if(!nombre || !email || !pass){
+    alert("⚠️ Llena todos los campos");
+    return;
+  }
+  if(pass.length < 6){
+    alert("⚠️ La contraseña debe tener al menos 6 caracteres");
+    return;
+  }
 
-auth.createUserWithEmailAndPassword(email, pass)
-.then((cred) => {
-return db.ref('usuarios/' + cred.user.uid).set({
-nombre: nombre,
-correo: email,
-fechaRegistro: firebase.database.ServerValue.TIMESTAMP
-});
-})
-.then(() => {
-alert("✅ Cuenta creada correctamente!");
-cerrarLogin();
-actualizarInfoUsuario();
-cambiarBotonSesion();
-})
-.catch((error) => {
-alert("❌ Error: " + error.message);
-});
+  auth.createUserWithEmailAndPassword(email, pass)
+  .then((cred) => {
+    return db.ref('usuarios/' + cred.user.uid).set({
+      nombre: nombre,
+      correo: email,
+      fechaRegistro: Date.now()
+    });
+  })
+  .then(() => {
+    alert("✅ Cuenta creada exitosamente");
+    cerrarLogin();
+    actualizarInfoUsuario();
+    cambiarBotonSesion();
+  })
+  .catch((error) => {
+    alert("❌ Error: " + error.message);
+  });
 }
 
 // INICIAR SESIÓN CON CORREO
 function iniciarSesion(){
-const email = document.getElementById('loginEmail').value;
-const pass = document.getElementById('loginPass').value;
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
 
-auth.signInWithEmailAndPassword(email, pass)
-.then(() => {
-alert("✅ Sesión iniciada correctamente");
-cerrarLogin();
-actualizarInfoUsuario();
-cambiarBotonSesion();
-})
-.catch((error) => {
-alert("❌ Error: " + error.message);
-});
-}
+  if(!email || !pass){
+    alert("⚠️ Ingresa tu correo y contraseña");
+    return;
+  }
 
-// INICIAR SESIÓN CON GOOGLE
-function iniciarGoogle(){
-const proveedorGoogle = new firebase.auth.GoogleAuthProvider();
-auth.signInWithPopup(proveedorGoogle)
-.then(() => {
-alert("✅ Sesión iniciada con Google");
-cerrarLogin();
-actualizarInfoUsuario();
-cambiarBotonSesion();
-})
-.catch((error) => {
-alert("❌ Error: " + error.message);
-});
-}
+  auth.signInWithEmailAndPassword(email, pass)
+  .then(() => {
+    alert("✅ Sesión iniciada correctamente");
+    cerrarLogin();
+    actualizarInfoUsuario();
+    cambiarBotonSesion();
+  })
+  .catch((error) => {
+    let mensaje = "Error al iniciar sesión";
+    switch(error.code){
+      case 'auth/invalid-email': mensaje = "Correo no válido"; break;
+      case 'auth/user-not-found': mensaje = "No existe una cuenta con este correo"; break;
+      case 'auth/wrong-password': mensaje = "Contraseña incorrecta"; break;
+    }
+    alert("❌ " + mensaje);
 
-// RECUPERAR CONTRASEÑA
-function enviarCorreoRecuperacion(){
-const email = document.getElementById('correoRecuperar').value;
-
-if(!email) {
-alert("⚠️ Ingresa tu correo electrónico");
-return;
-}
-
-const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-if(!regexCorreo.test(email)) {
-alert("⚠️ El correo que ingresaste no es válido");
-return;
-}
-
-auth.sendPasswordResetEmail(email)
-.then(() => {
-alert("✅ Se envió el enlace para cambiar tu contraseña. Revisa tu correo (incluyendo la carpeta de Spam).");
-cerrarOlvido();
-})
-.catch((error) => {
-let mensajeError = "❌ Ocurrió un error";
-switch(error.code) {
-case 'auth/invalid-email': mensajeError = "Correo electrónico no válido"; break;
-case 'auth/user-not-found': mensajeError = "No existe ninguna cuenta con este correo"; break;
-}
-alert(mensajeError);
-});
-}
-
-// ✅ FUNCIÓN DE PUBLICAR COMPLETA Y FUNCIONANDO
-async function publicarOferta(){
-// Primero verificamos que haya usuario conectado
-if(!usuarioActual) {
-alert("⚠️ Debes iniciar sesión antes de publicar");
-return;
-}
-
-// Recolectamos todos los datos que escribiste
-const titulo = document.getElementById('titulo').value;
-const descripcion = document.getElementById('caracteristicas').value;
-const precio = document.getElementById('valor').value;
-const contacto = document.getElementById('contacto').value;
-const categoria = document.getElementById('categoria').value;
-const archivoImagen = document.getElementById('imagenOferta').files[0];
-
-// Verificamos que no falten datos obligatorios
-if(!titulo || !descripcion || !precio || !contacto) {
-alert("⚠️ Por favor llena todos los campos obligatorios");
-return;
-}
-
-try {
-// Si subiste una foto, la guardamos en Firebase
-let urlImagen = "";
-if(archivoImagen){
-const referenciaImagen = storage.ref(`imagenes
   
