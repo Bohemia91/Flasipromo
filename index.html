@@ -49,220 +49,193 @@ hr{margin:20px 0;border:none;border-top:1px solid #eee}
 </div>
 
 <div class="menu">
-<button class="btn-menu" onclick="abrirCategoria('nuevos')">✨ Productos nuevos</button>
-<button class="btn-menu" onclick="abrirCategoria('segunda')">♻️ Productos segunda</button>
-<button class="btn-menu" onclick="abrirCategoria('servicios')">🔧 Servicios</button>
-<button class="btn-menu btn-publicar" onclick="mostrarPublicar()">📝 Publicar oferta</button>
+<button class="btn-menu" onclick="irACategoria('nuevos')">✨ Productos nuevos</button>
+<button class="btn-menu" onclick="irACategoria('segunda')">♻️ Productos segunda</button>
+<button class="btn-menu" onclick="irACategoria('servicios')">🔧 Servicios</button>
+<button class="btn-menu btn-publicar" onclick="abrirPublicar()">📝 Publicar oferta</button>
 </div>
 
+<!-- MODAL LOGIN -->
 <div class="modal" id="modalLogin">
 <div class="modal-contenido">
-<span class="cerrar" onclick="cerrarLogin()">×</span>
+<span class="cerrar" onclick="cerrarTodo()">&times;</span>
 <h2>Iniciar sesión</h2>
-
-<button class="btn-google" onclick="iniciarGoogle()">
-<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-Iniciar con Google
+<button class="btn-google" onclick="loginGoogle()">
+<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Iniciar con Google
 </button>
-
 <hr>
-
-<input type="email" id="loginEmail" placeholder="Correo">
-<input type="password" id="loginPass" placeholder="Contraseña">
-<button class="btn-enviar" onclick="iniciarSesion()">Entrar</button>
-
-<p class="enlace-olvido" onclick="mostrarOlvido()">¿Olvidaste tu contraseña?</p>
-
+<input type="email" id="correoLogin" placeholder="Correo">
+<input type="password" id="claveLogin" placeholder="Contraseña">
+<button class="btn-enviar" onclick="entrar()">Entrar</button>
+<p class="enlace-olvido" onclick="recuperarClave()">¿Olvidaste tu contraseña?</p>
 <hr>
-
 <h2>Crear cuenta</h2>
-
-<input type="text" id="regNombre" placeholder="Nombre completo">
-<input type="email" id="regEmail" placeholder="Correo">
-<input type="password" id="regPass" placeholder="Contraseña">
-
-<button class="btn-enviar" onclick="registrarUsuario()">Crear cuenta</button>
+<input type="text" id="nombreReg" placeholder="Nombre completo">
+<input type="email" id="correoReg" placeholder="Correo">
+<input type="password" id="claveReg" placeholder="Contraseña">
+<button class="btn-enviar" onclick="registrarme()">Crear cuenta</button>
 </div>
 </div>
 
-<div class="modal" id="modalOlvido">
-<div class="modal-contenido">
-<span class="cerrar" onclick="cerrarOlvido()">×</span>
-<h2>Recuperar contraseña</h2>
-
-<input type="email" id="correoRecuperar" placeholder="Tu correo">
-
-<button class="btn-enviar" onclick="enviarCorreoRecuperacion()">Enviar enlace</button>
-</div>
-</div>
-
+<!-- MODAL PUBLICAR -->
 <div class="modal" id="modalPublicar">
 <div class="modal-contenido">
-<span class="cerrar" onclick="cerrarPublicar()">×</span>
-
+<span class="cerrar" onclick="cerrarTodo()">&times;</span>
 <h2>Publicar oferta</h2>
-
-<input type="text" id="titulo" placeholder="Título">
-<textarea id="descripcion" placeholder="Descripción"></textarea>
-<input type="text" id="valor" placeholder="Precio" inputmode="numeric">
-<input type="text" id="contacto" placeholder="Contacto">
-
-<select id="categoria">
+<input type="text" id="tituloPub" placeholder="Título">
+<textarea id="descripcionPub" placeholder="Descripción detallada"></textarea>
+<input type="text" id="precioPub" placeholder="Precio" inputmode="numeric">
+<input type="text" id="contactoPub" placeholder="Teléfono / Contacto">
+<select id="categoriaPub">
 <option value="nuevos">Productos nuevos</option>
-<option value="segunda">Productos segunda</option>
+<option value="segunda">Productos de segunda</option>
 <option value="servicios">Servicios</option>
 </select>
+<button class="btn-enviar" onclick="guardarPublicacion()">Publicar</button>
+</div>
+</div>
 
-<button class="btn-enviar" onclick="publicarOferta()">Publicar</button>
+<!-- MODAL RECUPERAR -->
+<div class="modal" id="modalRecuperar">
+<div class="modal-contenido">
+<span class="cerrar" onclick="cerrarTodo()">&times;</span>
+<h2>Recuperar contraseña</h2>
+<input type="email" id="correoRec" placeholder="Tu correo electrónico">
+<button class="btn-enviar" onclick="enviarRecuperacion()">Enviar enlace</button>
 </div>
 </div>
 
 <script>
-
-// ✅ TU CONFIGURACIÓN EXACTA
-const firebaseConfig={
-apiKey:"AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
-authDomain:"flasipromo.firebaseapp.com",
-databaseURL:"https://flasipromo-default-rtdb.firebaseio.com",
-projectId:"flasipromo",
-storageBucket:"flasipromo.appspot.com",
-messagingSenderId:"439920052201",
-appId:"1:439920052201:ddf170b3be99b732cced78"
+// ✅ CONFIGURACIÓN EXACTA Y CORRECTA
+const firebaseConfig = {
+  apiKey: "AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
+  authDomain: "flasipromo.firebaseapp.com",
+  databaseURL: "https://flasipromo-default-rtdb.firebaseio.com",
+  projectId: "flasipromo",
+  storageBucket: "flasipromo.appspot.com",
+  messagingSenderId: "439920052201",
+  appId: "1:439920052201:ddf170b3be99b732cced78"
 };
 
+// ✅ INICIALIZACIÓN
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const auth = firebase.auth();
-
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-
 let usuarioActual = null;
 
+// ✅ DETECTAR SI HAY USUARIO LOGUEADO
 auth.onAuthStateChanged(usuario => {
-usuarioActual = usuario;
-actualizarInterfaz();
+  usuarioActual = usuario;
+  actualizarInterfaz();
 });
 
 function actualizarInterfaz(){
-const info = document.getElementById("infoUsuario");
-const boton = document.getElementById("botonSesion");
-
-if(usuarioActual){
-info.innerHTML = `✅ ${usuarioActual.email}`;
-boton.innerHTML = "Cerrar Sesión";
-boton.className = "btn-login btn-cerrar";
-} else {
-info.innerHTML = "❌ No has iniciado sesión";
-boton.innerHTML = "Iniciar Sesión";
-boton.className = "btn-login btn-iniciar";
-}
+  const info = document.getElementById("infoUsuario");
+  const boton = document.getElementById("botonSesion");
+  if (usuarioActual) {
+    info.textContent = `✅ ${usuarioActual.email}`;
+    boton.textContent = "Cerrar Sesión";
+    boton.className = "btn-login btn-cerrar";
+  } else {
+    info.textContent = "❌ No has iniciado sesión";
+    boton.textContent = "Iniciar Sesión";
+    boton.className = "btn-login btn-iniciar";
+  }
 }
 
 function accionSesion(){
-if(usuarioActual){
-cerrarSesion();
-} else {
-abrirLogin();
-}
-}
-
-function abrirCategoria(categoria){
-window.location.href = `categoria.html?categoria=${categoria}`;
+  if (usuarioActual) {
+    auth.signOut().then(() => alert("✅ Sesión cerrada"));
+  } else {
+    document.getElementById("modalLogin").style.display = "block";
+  }
 }
 
-function abrirLogin(){ document.getElementById("modalLogin").style.display = "block"; }
-function cerrarLogin(){ document.getElementById("modalLogin").style.display = "none"; }
-function mostrarOlvido(){ cerrarLogin(); document.getElementById("modalOlvido").style.display = "block"; }
-function cerrarOlvido(){ document.getElementById("modalOlvido").style.display = "none"; }
-function mostrarPublicar(){
-if(usuarioActual) {
-document.getElementById("modalPublicar").style.display = "block";
-} else {
-alert("⚠️ Debes iniciar sesión primero");
-abrirLogin();
-}
-}
-function cerrarPublicar(){ document.getElementById("modalPublicar").style.display = "none"; }
-
-// ✅ REGISTRO
-function registrarUsuario(){
-const nombre = document.getElementById("regNombre").value.trim();
-const email = document.getElementById("regEmail").value.trim();
-const pass = document.getElementById("regPass").value.trim();
-
-if(!nombre || !email || !pass) return alert("⚠️ Completa todos los campos");
-
-auth.createUserWithEmailAndPassword(email,pass)
-.then(cred => {
-return db.ref("usuarios/" + cred.user.uid).set({nombre, correo:email, fecha:Date.now()});
-})
-.then(() => { alert("✅ Cuenta creada"); cerrarLogin(); })
-.catch(e => alert("❌ " + e.message));
+function irACategoria(cat){
+  window.location.href = `categoria.html?categoria=${cat}`;
 }
 
-// ✅ INICIO SESIÓN
-function iniciarSesion(){
-const email = document.getElementById("loginEmail").value.trim();
-const pass = document.getElementById("loginPass").value.trim();
-
-if(!email || !pass) return alert("⚠️ Escribe correo y contraseña");
-
-auth.signInWithEmailAndPassword(email,pass)
-.then(() => { alert("✅ Sesión iniciada"); cerrarLogin(); })
-.catch(e => alert("❌ " + e.message));
+function abrirPublicar(){
+  if (!usuarioActual) return alert("⚠️ Debes iniciar sesión primero");
+  document.getElementById("modalPublicar").style.display = "block";
 }
 
-// ✅ INICIO CON GOOGLE
-function iniciarGoogle(){
-const prov = new firebase.auth.GoogleAuthProvider();
-auth.signInWithPopup(prov)
-.then(() => { alert("✅ Sesión iniciada con Google"); cerrarLogin(); })
-.catch(e => alert("❌ " + e.message));
+function cerrarTodo(){
+  document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
 }
 
-function enviarCorreoRecuperacion(){
-const email = document.getElementById("correoRecuperar").value.trim();
-if(!email) return alert("⚠️ Escribe tu correo");
-auth.sendPasswordResetEmail(email)
-.then(() => { alert("✅ Revisa tu correo"); cerrarOlvido(); })
-.catch(e => alert("❌ " + e.message));
+function recuperarClave(){
+  cerrarTodo();
+  document.getElementById("modalRecuperar").style.display = "block";
 }
 
-function cerrarSesion(){
-auth.signOut().then(() => alert("✅ Sesión cerrada")).catch(e => alert("❌ " + e.message));
+// ✅ FUNCIONES DE AUTENTICACIÓN
+function registrarme(){
+  const nombre = document.getElementById("nombreReg").value.trim();
+  const correo = document.getElementById("correoReg").value.trim();
+  const clave = document.getElementById("claveReg").value.trim();
+  if(!nombre || !correo || !clave) return alert("⚠️ Completa todo");
+  
+  auth.createUserWithEmailAndPassword(correo, clave)
+  .then(cred => {
+    return db.ref('usuarios/' + cred.user.uid).set({nombre, correo, fecha: Date.now()});
+  })
+  .then(() => { alert("✅ Cuenta creada"); cerrarTodo(); })
+  .catch(e => alert("❌ " + e.message));
 }
 
-// ✅ PUBLICAR OFERTA (CORREGIDO)
-function publicarOferta(){
-if(!usuarioActual) return alert("⚠️ Inicia sesión primero");
+function entrar(){
+  const correo = document.getElementById("correoLogin").value.trim();
+  const clave = document.getElementById("claveLogin").value.trim();
+  if(!correo || !clave) return alert("⚠️ Escribe correo y clave");
 
-const datos = {
-titulo: document.getElementById('titulo').value.trim(),
-descripcion: document.getElementById('descripcion').value.trim(),
-valor: document.getElementById('valor').value.trim(),
-contacto: document.getElementById('contacto').value.trim(),
-categoria: document.getElementById('categoria').value,
-usuario: usuarioActual.email,
-fecha: Date.now()
-};
-
-if(!datos.titulo || !datos.descripcion || !datos.valor || !datos.contacto || !datos.categoria) {
-return alert("⚠️ Completa todos los campos");
+  auth.signInWithEmailAndPassword(correo, clave)
+  .then(() => { alert("✅ Bienvenido"); cerrarTodo(); })
+  .catch(e => alert("❌ " + e.message));
 }
 
-const idNuevo = Date.now();
-db.ref("ofertas/" + datos.categoria + "/" + idNuevo).set(datos)
-.then(() => {
-alert("✅ ¡PUBLICADO CON ÉXITO!");
-document.getElementById('titulo').value = "";
-document.getElementById('descripcion').value = "";
-document.getElementById('valor').value = "";
-document.getElementById('contacto').value = "";
-cerrarPublicar();
-})
-.catch(error => {
-alert("❌ ERROR: " + error.message);
-});
+function loginGoogle(){
+  const prov = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(prov)
+  .then(() => { alert("✅ Bienvenido con Google"); cerrarTodo(); })
+  .catch(e => alert("❌ " + e.message));
+}
+
+function enviarRecuperacion(){
+  const correo = document.getElementById("correoRec").value.trim();
+  auth.sendPasswordResetEmail(correo)
+  .then(() => { alert("✅ Revisa tu correo"); cerrarTodo(); })
+  .catch(e => alert("❌ " + e.message));
+}
+
+// ✅ FUNCIÓN PUBLICAR (LA CLAVE DE TODO)
+function guardarPublicacion(){
+  const datos = {
+    titulo: document.getElementById("tituloPub").value.trim(),
+    descripcion: document.getElementById("descripcionPub").value.trim(),
+    valor: document.getElementById("precioPub").value.trim(),
+    contacto: document.getElementById("contactoPub").value.trim(),
+    categoria: document.getElementById("categoriaPub").value,
+    usuario: usuarioActual.email,
+    fecha: Date.now()
+  };
+
+  if(!datos.titulo || !datos.descripcion || !datos.valor || !datos.contacto) 
+    return alert("⚠️ Completa todos los campos");
+
+  // 🟢 GUARDADO DIRECTO EN LA RUTA CORRECTA
+  const idUnico = Date.now();
+  db.ref("ofertas/" + datos.categoria + "/" + idUnico).set(datos)
+  .then(() => {
+    alert("✅ ¡PUBLICADO CON ÉXITO!");
+    // Limpiar campos
+    document.getElementById("tituloPub").value = "";
+    document.getElementById("descripcionPub").value = "";
+    document.getElementById("precioPub").value = "";
+    document.getElementById("contactoPub").value = "";
+    cerrarTodo();
+  })
+  .catch(e => alert("❌ ERROR DB: " + e.message));
 }
 </script>
 </body>
