@@ -13,7 +13,7 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
 body{background:#f3f3f3;min-height:100vh;display:flex;flex-direction:column}
 .encabezado{background:#056b1f;color:white;padding:15px 10px;text-align:center;position:relative}
-.info-usuario{position:absolute;top:10px;right:15px;font-size:12px;background:#e3c74b;color:#056b1f;padding:6px 12px;border-radius:20px;font-weight:bold;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.info-usuario{position:absolute;top:10px;right:10px;font-size:12px;background:#e3c74b;color:#056b1f;padding:5px 10px;border-radius:20px;font-weight:bold;box-shadow:0 2px 4px rgba(0,0,0,.2)}
 .encabezado h1{font-size:20px;margin-bottom:5px}
 .encabezado p{font-size:12px;margin-bottom:10px}
 .btn-login{border:none;padding:8px 16px;border-radius:12px;font-size:13px;font-weight:bold;cursor:pointer;transition:.2s}
@@ -30,8 +30,8 @@ body{background:#f3f3f3;min-height:100vh;display:flex;flex-direction:column}
 input,textarea,select{width:100%;padding:12px;margin-bottom:12px;border-radius:12px;border:1px solid #ddd;font-size:14px}
 textarea{resize:vertical;min-height:80px}
 .btn-enviar{width:100%;padding:13px;border:none;border-radius:12px;background:#056b1f;color:white;font-weight:bold;font-size:14px;cursor:pointer}
-.btn-enviar:hover{background:#04551a)
-.cerrar{float:right;font-size:24px;cursor:pointer;color:#666}
+.btn-enviar:hover{background:#04551a}
+.cerrar{position:absolute;top:15px;right:15px;font-size:24px;cursor:pointer;color:#666}
 .cerrar:hover{color:#000}
 .enlace-olvido{text-align:center;margin-top:10px;color:#056b1f;font-size:13px;cursor:pointer;text-decoration:underline}
 .btn-google{width:100%;padding:12px;border-radius:12px;border:1px solid #ddd;background:white;color:#333;font-weight:bold;font-size:14px;margin-bottom:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
@@ -103,7 +103,7 @@ Iniciar con Google
 <h2>Publicar oferta</h2>
 
 <input type="text" id="titulo" placeholder="Título">
-<textarea id="caracteristicas" placeholder="Descripción"></textarea>
+<textarea id="descripcion" placeholder="Descripción"></textarea>
 <input type="text" id="valor" placeholder="Precio" inputmode="numeric">
 <input type="text" id="contacto" placeholder="Contacto">
 
@@ -119,10 +119,10 @@ Iniciar con Google
 
 <script>
 
+// ✅ TU CONFIGURACIÓN EXACTA
 const firebaseConfig={
 apiKey:"AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
 authDomain:"flasipromo.firebaseapp.com",
-// ✅ DIRECCIÓN CORREGIDA SIN BARRA FINAL:
 databaseURL:"https://flasipromo-default-rtdb.firebaseio.com",
 projectId:"flasipromo",
 storageBucket:"flasipromo.appspot.com",
@@ -140,80 +140,105 @@ let usuarioActual = null;
 
 auth.onAuthStateChanged(usuario => {
 usuarioActual = usuario;
-actualizarInfoUsuario();
-cambiarBotonSesion();
+actualizarInterfaz();
 });
 
-function actualizarInfoUsuario(){
+function actualizarInterfaz(){
 const info = document.getElementById("infoUsuario");
-info.innerHTML = usuarioActual ? `✅ ${usuarioActual.email}` : "❌ No has iniciado sesión";
-}
-
-function cambiarBotonSesion(){
 const boton = document.getElementById("botonSesion");
+
 if(usuarioActual){
+info.innerHTML = `✅ ${usuarioActual.email}`;
 boton.innerHTML = "Cerrar Sesión";
-boton.classList.remove("btn-iniciar");
-boton.classList.add("btn-cerrar");
+boton.className = "btn-login btn-cerrar";
 } else {
+info.innerHTML = "❌ No has iniciado sesión";
 boton.innerHTML = "Iniciar Sesión";
-boton.classList.remove("btn-cerrar");
-boton.classList.add("btn-iniciar");
+boton.className = "btn-login btn-iniciar";
 }
 }
 
-function accionSesion(){ usuarioActual ? cerrarSesion() : abrirLogin(); }
-function abrirCategoria(categoria){ window.location.href = `categoria.html?categoria=${categoria}`; }
+function accionSesion(){
+if(usuarioActual){
+cerrarSesion();
+} else {
+abrirLogin();
+}
+}
+
+function abrirCategoria(categoria){
+window.location.href = `categoria.html?categoria=${categoria}`;
+}
+
 function abrirLogin(){ document.getElementById("modalLogin").style.display = "block"; }
 function cerrarLogin(){ document.getElementById("modalLogin").style.display = "none"; }
 function mostrarOlvido(){ cerrarLogin(); document.getElementById("modalOlvido").style.display = "block"; }
 function cerrarOlvido(){ document.getElementById("modalOlvido").style.display = "none"; }
-function mostrarPublicar(){ usuarioActual ? document.getElementById("modalPublicar").style.display = "block") : (alert("⚠️ Debes iniciar sesión"), abrirLogin()); }
+function mostrarPublicar(){
+if(usuarioActual) {
+document.getElementById("modalPublicar").style.display = "block";
+} else {
+alert("⚠️ Debes iniciar sesión primero");
+abrirLogin();
+}
+}
 function cerrarPublicar(){ document.getElementById("modalPublicar").style.display = "none"; }
 
+// ✅ REGISTRO
 function registrarUsuario(){
 const nombre = document.getElementById("regNombre").value.trim();
 const email = document.getElementById("regEmail").value.trim();
 const pass = document.getElementById("regPass").value.trim();
-if(!nombre || !email || !pass) return alert("⚠️ Completa todo");
+
+if(!nombre || !email || !pass) return alert("⚠️ Completa todos los campos");
+
 auth.createUserWithEmailAndPassword(email,pass)
-.then(cred => db.ref("usuarios/" + cred.user.uid).set({nombre, correo:email, fecha:Date.now()}))
+.then(cred => {
+return db.ref("usuarios/" + cred.user.uid).set({nombre, correo:email, fecha:Date.now()});
+})
 .then(() => { alert("✅ Cuenta creada"); cerrarLogin(); })
 .catch(e => alert("❌ " + e.message));
 }
 
+// ✅ INICIO SESIÓN
 function iniciarSesion(){
 const email = document.getElementById("loginEmail").value.trim();
 const pass = document.getElementById("loginPass").value.trim();
+
+if(!email || !pass) return alert("⚠️ Escribe correo y contraseña");
+
 auth.signInWithEmailAndPassword(email,pass)
 .then(() => { alert("✅ Sesión iniciada"); cerrarLogin(); })
 .catch(e => alert("❌ " + e.message));
 }
 
+// ✅ INICIO CON GOOGLE
 function iniciarGoogle(){
 const prov = new firebase.auth.GoogleAuthProvider();
 auth.signInWithPopup(prov)
-.then(() => { alert("✅ Sesión iniciada"); cerrarLogin(); })
+.then(() => { alert("✅ Sesión iniciada con Google"); cerrarLogin(); })
 .catch(e => alert("❌ " + e.message));
 }
 
 function enviarCorreoRecuperacion(){
 const email = document.getElementById("correoRecuperar").value.trim();
+if(!email) return alert("⚠️ Escribe tu correo");
 auth.sendPasswordResetEmail(email)
 .then(() => { alert("✅ Revisa tu correo"); cerrarOlvido(); })
 .catch(e => alert("❌ " + e.message));
 }
 
-function cerrarSesion(){ auth.signOut().then(() => alert("✅ Sesión cerrada")).catch(e => alert("❌ " + e.message)); }
+function cerrarSesion(){
+auth.signOut().then(() => alert("✅ Sesión cerrada")).catch(e => alert("❌ " + e.message));
+}
 
-// ✅ FUNCIÓN PUBLICAR SIMPLIFICADA AL MÁXIMO, SIN IMÁGENES, SOLO DATOS
+// ✅ PUBLICAR OFERTA (CORREGIDO)
 function publicarOferta(){
 if(!usuarioActual) return alert("⚠️ Inicia sesión primero");
 
-// CAPTURAR DATOS
 const datos = {
 titulo: document.getElementById('titulo').value.trim(),
-descripcion: document.getElementById('caracteristicas').value.trim(),
+descripcion: document.getElementById('descripcion').value.trim(),
 valor: document.getElementById('valor').value.trim(),
 contacto: document.getElementById('contacto').value.trim(),
 categoria: document.getElementById('categoria').value,
@@ -221,25 +246,22 @@ usuario: usuarioActual.email,
 fecha: Date.now()
 };
 
-// VALIDACIÓN
 if(!datos.titulo || !datos.descripcion || !datos.valor || !datos.contacto || !datos.categoria) {
 return alert("⚠️ Completa todos los campos");
 }
 
-// 🟢 GUARDADO DIRECTO Y SEGURO
 const idNuevo = Date.now();
 db.ref("ofertas/" + datos.categoria + "/" + idNuevo).set(datos)
 .then(() => {
 alert("✅ ¡PUBLICADO CON ÉXITO!");
 document.getElementById('titulo').value = "";
-document.getElementById('caracteristicas').value = "";
+document.getElementById('descripcion').value = "";
 document.getElementById('valor').value = "";
 document.getElementById('contacto').value = "";
 cerrarPublicar();
 })
 .catch(error => {
-// 🔴 AQUÍ TE DIRÁ POR FIN QUÉ ESTÁ FALLANDO REALMENTE
-alert("❌ ERROR: " + error.code + " | " + error.message);
+alert("❌ ERROR: " + error.message);
 });
 }
 </script>
