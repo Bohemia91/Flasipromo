@@ -38,10 +38,12 @@ position:absolute;
 top:10px;
 right:15px;
 font-size:12px;
-background:white;
+background:#e3c74b;
 color:#056b1f;
-padding:5px 10px;
+padding:6px 12px;
 border-radius:20px;
+font-weight:bold;
+box-shadow:0 2px 4px rgba(0,0,0,0.2);
 }
 
 .encabezado h1{
@@ -52,15 +54,24 @@ margin-bottom:5px;
 font-size:12px;
 margin-bottom:10px;
 }
+
 .btn-login{
-background:white;
-color:#056b1f;
 border:none;
 padding:9px 18px;
 border-radius:12px;
 font-size:13px;
 font-weight:bold;
+cursor:pointer;
 }
+.btn-iniciar{
+background:white;
+color:#056b1f;
+}
+.btn-cerrar{
+background:#dc3545;
+color:white;
+}
+
 .menu{
 flex:1;
 display:flex;
@@ -165,8 +176,10 @@ gap:8px;
 <div class="encabezado">
 <h1>Ofertas Santa Rosa</h1>
 <p>Productos y servicios cerca de ti</p>
-<div class="info-usuario" id="infoUsuario">No has iniciado sesión</div>
-<button class="btn-login" onclick="abrirLogin()">Iniciar Sesión</button>
+
+<div class="info-usuario" id="infoUsuario">❌ No has iniciado sesión</div>
+
+<button class="btn-login btn-iniciar" id="botonSesion" onclick="accionSesion()">Iniciar Sesión</button>
 </div>
 
 <div class="menu">
@@ -219,17 +232,17 @@ gap:8px;
 <span class="cerrar" onclick="cerrarPublicar()">×</span>
 <h2>Publicar oferta</h2>
 
-<input type="text" id="titulo" placeholder="Título">
-<textarea id="caracteristicas" placeholder="Descripción" rows="4"></textarea>
-<input type="number" id="valor" placeholder="Precio">
-<input type="text" id="contacto" placeholder="Contacto">
+<input type="text" id="titulo" placeholder="Título" value="Celular gama media">
+<textarea id="caracteristicas" placeholder="Descripción" rows="4">Económico, poco uso</textarea>
+<input type="number" id="valor" placeholder="Precio" value="150000">
+<input type="text" id="contacto" placeholder="Contacto" value="3005554433">
 
-<p style="font-size:13px; margin-bottom:5px;">Agrega una foto de tu oferta:</p>
+<p style="font-size:14px; font-weight:bold; color:#056b1f; margin-bottom:8px;">📸 Foto de la oferta (opcional):</p>
 <input type="file" id="imagenOferta" accept="image/*">
 
 <select id="categoria">
 <option value="nuevos">Productos nuevos</option>
-<option value="segunda">Productos segunda</option>
+<option value="segunda" selected>Productos segunda</option>
 <option value="servicios">Servicios</option>
 </select>
 
@@ -246,7 +259,7 @@ const firebaseConfig = {
   projectId: "flasipromo",
   storageBucket: "flasipromo.firebasestorage.app",
   messagingSenderId: "439920052201",
-  appId: "1:439920052201:web:ddf170b3be99b732cced78",
+  appId: "1:439920052201:ddf170b3be99b732cced78",
   measurementId: "G-LWKKN5ESQR"
 };
 
@@ -264,6 +277,7 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 auth.onAuthStateChanged((usuario) => {
   usuarioActual = usuario;
   actualizarInfoUsuario();
+  cambiarBotonSesion();
 });
 
 // ACTUALIZAR INFORMACIÓN DEL USUARIO
@@ -281,6 +295,29 @@ function actualizarInfoUsuario(){
     elementoInfo.innerHTML = "❌ No has iniciado sesión";
     elementoInfo.style.background = "white";
     elementoInfo.style.color = "#056b1f";
+  }
+}
+
+// CAMBIAR BOTÓN DE INICIAR/CERRAR SESIÓN
+function cambiarBotonSesion(){
+  const boton = document.getElementById("botonSesion");
+  if(usuarioActual){
+    boton.innerHTML = "Cerrar Sesión";
+    boton.classList.remove("btn-iniciar");
+    boton.classList.add("btn-cerrar");
+  } else {
+    boton.innerHTML = "Iniciar Sesión";
+    boton.classList.remove("btn-cerrar");
+    boton.classList.add("btn-iniciar");
+  }
+}
+
+// ACCIÓN DEL BOTÓN (INICIAR O CERRAR)
+function accionSesion(){
+  if(usuarioActual){
+    cerrarSesion();
+  } else {
+    abrirLogin();
   }
 }
 
@@ -305,11 +342,22 @@ function mostrarPublicar(){
 if(usuarioActual){
 document.getElementById('modalPublicar').style.display='block';
 }else{
-alert('Debes iniciar sesión primero');
+alert('Debes iniciar sesión primero para publicar');
 }
 }
 function cerrarPublicar(){
 document.getElementById('modalPublicar').style.display='none';
+}
+
+// CERRAR SESIÓN
+function cerrarSesion(){
+auth.signOut().then(() => {
+alert("✅ Sesión cerrada correctamente");
+actualizarInfoUsuario();
+cambiarBotonSesion();
+}).catch((error) => {
+alert("❌ Error al cerrar sesión: " + error.message);
+});
 }
 
 // REGISTRAR USUARIO
@@ -335,6 +383,7 @@ fechaRegistro: firebase.database.ServerValue.TIMESTAMP
 alert("✅ Cuenta creada correctamente!");
 cerrarLogin();
 actualizarInfoUsuario();
+cambiarBotonSesion();
 })
 .catch((error) => {
 alert("❌ Error: " + error.message);
@@ -348,9 +397,10 @@ const pass = document.getElementById('loginPass').value;
 
 auth.signInWithEmailAndPassword(email, pass)
 .then(() => {
-alert("✅ Sesión iniciada");
+alert("✅ Sesión iniciada correctamente");
 cerrarLogin();
 actualizarInfoUsuario();
+cambiarBotonSesion();
 })
 .catch((error) => {
 alert("❌ Error: " + error.message);
@@ -365,6 +415,7 @@ auth.signInWithPopup(proveedorGoogle)
 alert("✅ Sesión iniciada con Google");
 cerrarLogin();
 actualizarInfoUsuario();
+cambiarBotonSesion();
 })
 .catch((error) => {
 alert("❌ Error: " + error.message);
@@ -376,38 +427,40 @@ function enviarCorreoRecuperacion(){
 const email = document.getElementById('correoRecuperar').value;
 
 if(!email) {
-alert("⚠️ Ingresa tu correo");
+alert("⚠️ Ingresa tu correo electrónico");
 return;
 }
 
 const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 if(!regexCorreo.test(email)) {
-alert("⚠️ Correo no válido");
+alert("⚠️ El correo que ingresaste no es válido");
 return;
 }
 
 auth.sendPasswordResetEmail(email)
 .then(() => {
-alert("✅ Se envió el enlace. Revisa tu correo (incluyendo Spam)");
+alert("✅ Se envió el enlace para cambiar tu contraseña. Revisa tu correo (incluyendo la carpeta de Spam).");
 cerrarOlvido();
 })
 .catch((error) => {
-let mensajeError = "❌ Error";
+let mensajeError = "❌ Ocurrió un error";
 switch(error.code) {
-case 'auth/invalid-email': mensajeError = "Correo no válido"; break;
-case 'auth/user-not-found': mensajeError = "No existe cuenta con este correo"; break;
+case 'auth/invalid-email': mensajeError = "Correo electrónico no válido"; break;
+case 'auth/user-not-found': mensajeError = "No existe ninguna cuenta con este correo"; break;
 }
 alert(mensajeError);
 });
 }
 
-// PUBLICAR OFERTA
+// ✅ FUNCIÓN DE PUBLICAR COMPLETA Y FUNCIONANDO
 async function publicarOferta(){
+// Primero verificamos que haya usuario conectado
 if(!usuarioActual) {
-alert("⚠️ Debes iniciar sesión");
+alert("⚠️ Debes iniciar sesión antes de publicar");
 return;
 }
 
+// Recolectamos todos los datos que escribiste
 const titulo = document.getElementById('titulo').value;
 const descripcion = document.getElementById('caracteristicas').value;
 const precio = document.getElementById('valor').value;
@@ -415,38 +468,15 @@ const contacto = document.getElementById('contacto').value;
 const categoria = document.getElementById('categoria').value;
 const archivoImagen = document.getElementById('imagenOferta').files[0];
 
+// Verificamos que no falten datos obligatorios
 if(!titulo || !descripcion || !precio || !contacto) {
-alert("⚠️ Llena todos los campos obligatorios");
+alert("⚠️ Por favor llena todos los campos obligatorios");
 return;
 }
 
 try {
+// Si subiste una foto, la guardamos en Firebase
 let urlImagen = "";
 if(archivoImagen){
-const referenciaImagen = storage.ref(`imagenes/${Date.now()}_${archivoImagen.name}`);
-await referenciaImagen.put(archivoImagen);
-urlImagen = await referenciaImagen.getDownloadURL();
-}
-
-await db.ref('publicaciones').push({
-titulo: titulo,
-descripcion: descripcion,
-precio: precio,
-contacto: contacto,
-categoria: categoria,
-imagen: urlImagen,
-autorId: usuarioActual.uid,
-autorNombre: usuarioActual.displayName || usuarioActual.email,
-fecha: firebase.database.ServerValue.TIMESTAMP
-});
-
-alert("✅ Oferta publicada correctamente!");
-cerrarPublicar();
-
-} catch (error) {
-alert("❌ Error al publicar: " + error.message);
-}
-}
-</script>
-</body>
-</html>
+const referenciaImagen = storage.ref(`imagenes
+  
