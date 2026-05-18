@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ofertas Santa Rosa</title>
 
-<!-- Librerías Firebase (agregamos Storage para fotos y Google Auth) -->
+<!-- Librerías Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
@@ -33,7 +33,6 @@ text-align:center;
 position:relative;
 }
 
-/* ESTILO PARA MOSTRAR EL USUARIO CONECTADO */
 .info-usuario{
 position:absolute;
 top:10px;
@@ -96,6 +95,7 @@ height:100%;
 background:rgba(0,0,0,0.6);
 padding:15px;
 z-index:10;
+overflow-y:auto;
 }
 .modal-contenido{
 background:white;
@@ -153,6 +153,10 @@ font-weight:bold;
 font-size:14px;
 margin-bottom:15px;
 cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
 }
 </style>
 </head>
@@ -161,10 +165,7 @@ cursor:pointer;
 <div class="encabezado">
 <h1>Ofertas Santa Rosa</h1>
 <p>Productos y servicios cerca de ti</p>
-
-<!-- AQUÍ SE MUESTRA EL USUARIO CONECTADO -->
 <div class="info-usuario" id="infoUsuario">No has iniciado sesión</div>
-
 <button class="btn-login" onclick="abrirLogin()">Iniciar Sesión</button>
 </div>
 
@@ -181,7 +182,6 @@ cursor:pointer;
 <span class="cerrar" onclick="cerrarLogin()">×</span>
 <h2>Iniciar sesión</h2>
 
-<!-- BOTÓN PARA INICIAR CON GOOGLE -->
 <button class="btn-google" onclick="iniciarGoogle()">
 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Iniciar con Google
 </button>
@@ -213,18 +213,17 @@ cursor:pointer;
 </div>
 </div>
 
-<!-- MODAL PUBLICAR OFERTA (AGREGAMOS CAMPO PARA FOTO) -->
+<!-- MODAL PUBLICAR OFERTA -->
 <div class="modal" id="modalPublicar">
 <div class="modal-contenido">
 <span class="cerrar" onclick="cerrarPublicar()">×</span>
 <h2>Publicar oferta</h2>
 
 <input type="text" id="titulo" placeholder="Título">
-<textarea id="caracteristicas" placeholder="Descripción"></textarea>
+<textarea id="caracteristicas" placeholder="Descripción" rows="4"></textarea>
 <input type="number" id="valor" placeholder="Precio">
 <input type="text" id="contacto" placeholder="Contacto">
 
-<!-- CAMPO PARA SUBIR FOTO -->
 <p style="font-size:13px; margin-bottom:5px;">Agrega una foto de tu oferta:</p>
 <input type="file" id="imagenOferta" accept="image/*">
 
@@ -245,7 +244,7 @@ const firebaseConfig = {
   authDomain: "flasipromo.firebaseapp.com",
   databaseURL: "https://flasipromo-default-rtdb.firebaseio.com",
   projectId: "flasipromo",
-  storageBucket: "flasipromo.firebasestorage.app", // AGREGADO PARA FOTOS
+  storageBucket: "flasipromo.firebasestorage.app",
   messagingSenderId: "439920052201",
   appId: "1:439920052201:web:ddf170b3be99b732cced78",
   measurementId: "G-LWKKN5ESQR"
@@ -255,7 +254,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const auth = firebase.auth();
-const storage = firebase.storage(); // SERVICIO PARA FOTOS
+const storage = firebase.storage();
 let usuarioActual = null;
 
 // MANTENER SESIÓN ACTIVA
@@ -264,19 +263,16 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 // DETECTAR CAMBIOS EN LA SESIÓN
 auth.onAuthStateChanged((usuario) => {
   usuarioActual = usuario;
-  actualizarInfoUsuario(); // ACTUALIZAMOS LA INFORMACIÓN DEL USUARIO
+  actualizarInfoUsuario();
 });
 
-// FUNCIÓN PARA ACTUALIZAR LO QUE SE MUESTRA DEL USUARIO
+// ACTUALIZAR INFORMACIÓN DEL USUARIO
 function actualizarInfoUsuario(){
   const elementoInfo = document.getElementById("infoUsuario");
   if(usuarioActual){
-    // SI INICIÓ CON GOOGLE: MOSTRAMOS NOMBRE Y FOTO
     if(usuarioActual.providerData[0].providerId === "google.com"){
       elementoInfo.innerHTML = `✅ Conectado como: <b>${usuarioActual.displayName}</b>`;
-    } 
-    // SI INICIÓ CON CORREO: MOSTRAMOS NOMBRE QUE PUSO
-    else {
+    } else {
       elementoInfo.innerHTML = `✅ Conectado como: <b>${usuarioActual.email}</b>`;
     }
     elementoInfo.style.background = "#e3c74b";
@@ -288,7 +284,7 @@ function actualizarInfoUsuario(){
   }
 }
 
-// --- FUNCIONES BÁSICAS ---
+// FUNCIONES BÁSICAS
 function abrirCategoria(categoria){
 window.location.href=`categoria.html?categoria=${categoria}`;
 }
@@ -316,7 +312,7 @@ function cerrarPublicar(){
 document.getElementById('modalPublicar').style.display='none';
 }
 
-// --- REGISTRAR USUARIO ---
+// REGISTRAR USUARIO
 function registrarUsuario(){
 const nombre = document.getElementById('regNombre').value;
 const email = document.getElementById('regEmail').value;
@@ -329,7 +325,6 @@ return;
 
 auth.createUserWithEmailAndPassword(email, pass)
 .then((cred) => {
-// Guardamos el nombre en la base de datos
 return db.ref('usuarios/' + cred.user.uid).set({
 nombre: nombre,
 correo: email,
@@ -339,14 +334,14 @@ fechaRegistro: firebase.database.ServerValue.TIMESTAMP
 .then(() => {
 alert("✅ Cuenta creada correctamente!");
 cerrarLogin();
-actualizarInfoUsuario(); // ACTUALIZAMOS LA INFORMACIÓN
+actualizarInfoUsuario();
 })
 .catch((error) => {
 alert("❌ Error: " + error.message);
 });
 }
 
-// --- INICIAR SESIÓN CON CORREO ---
+// INICIAR SESIÓN CON CORREO
 function iniciarSesion(){
 const email = document.getElementById('loginEmail').value;
 const pass = document.getElementById('loginPass').value;
@@ -362,7 +357,7 @@ alert("❌ Error: " + error.message);
 });
 }
 
-// --- INICIAR SESIÓN CON GOOGLE ---
+// INICIAR SESIÓN CON GOOGLE
 function iniciarGoogle(){
 const proveedorGoogle = new firebase.auth.GoogleAuthProvider();
 auth.signInWithPopup(proveedorGoogle)
@@ -376,7 +371,7 @@ alert("❌ Error: " + error.message);
 });
 }
 
-// --- RECUPERAR CONTRASEÑA ---
+// RECUPERAR CONTRASEÑA
 function enviarCorreoRecuperacion(){
 const email = document.getElementById('correoRecuperar').value;
 
@@ -406,14 +401,13 @@ alert(mensajeError);
 });
 }
 
-// --- PUBLICAR OFERTA (FUNCIONA AHORA Y SUBE FOTOS) ---
+// PUBLICAR OFERTA
 async function publicarOferta(){
 if(!usuarioActual) {
 alert("⚠️ Debes iniciar sesión");
 return;
 }
 
-// OBTENEMOS LOS DATOS DEL FORMULARIO
 const titulo = document.getElementById('titulo').value;
 const descripcion = document.getElementById('caracteristicas').value;
 const precio = document.getElementById('valor').value;
@@ -421,14 +415,12 @@ const contacto = document.getElementById('contacto').value;
 const categoria = document.getElementById('categoria').value;
 const archivoImagen = document.getElementById('imagenOferta').files[0];
 
-// VALIDAMOS QUE HAYA DATOS OBLIGATORIOS
 if(!titulo || !descripcion || !precio || !contacto) {
 alert("⚠️ Llena todos los campos obligatorios");
 return;
 }
 
 try {
-// SI SUBIÓ UNA FOTO: LA GUARDAMOS EN FIREBASE STORAGE
 let urlImagen = "";
 if(archivoImagen){
 const referenciaImagen = storage.ref(`imagenes/${Date.now()}_${archivoImagen.name}`);
@@ -436,14 +428,25 @@ await referenciaImagen.put(archivoImagen);
 urlImagen = await referenciaImagen.getDownloadURL();
 }
 
-// GUARDAMOS TODOS LOS DATOS EN LA BASE DE DATOS
 await db.ref('publicaciones').push({
 titulo: titulo,
 descripcion: descripcion,
 precio: precio,
 contacto: contacto,
 categoria: categoria,
-imagen: urlImagen, // GUARDAMOS EL ENLACE DE LA FOTO
+imagen: urlImagen,
 autorId: usuarioActual.uid,
-autorNombre: usuarioActual.displayName || usuarioActual.email, // NOMBRE DEL
-  
+autorNombre: usuarioActual.displayName || usuarioActual.email,
+fecha: firebase.database.ServerValue.TIMESTAMP
+});
+
+alert("✅ Oferta publicada correctamente!");
+cerrarPublicar();
+
+} catch (error) {
+alert("❌ Error al publicar: " + error.message);
+}
+}
+</script>
+</body>
+</html>
