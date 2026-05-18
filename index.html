@@ -453,7 +453,13 @@ function enviarCorreoRecuperacion(){
 }
 
 // PUBLICAR NUEVA OFERTA
-  function publicarOferta(){
+function publicarOferta(){
+
+  if(!usuarioActual){
+    alert("⚠️ Debes iniciar sesión");
+    return;
+  }
+
   const titulo = document.getElementById('titulo').value.trim();
   const descripcion = document.getElementById('caracteristicas').value.trim();
   const valor = document.getElementById('valor').value.trim();
@@ -462,49 +468,75 @@ function enviarCorreoRecuperacion(){
   const archivo = document.getElementById('imagenOferta').files[0];
 
   if(!titulo || !descripcion || !valor || !contacto){
-    alert("⚠️ Todos los campos son obligatorios");
+    alert("⚠️ Completa todos los campos");
     return;
   }
 
-  const idOferta = db.ref().push().key;
-  let referenciaImagen = null;
+  const idOferta = Date.now();
 
-  if(archivo){
-    referenciaImagen = storage.ref(`ofertas/${idOferta}_${archivo.name}`);
-    referenciaImagen.put(archivo).then(() => {
-      return referenciaImagen.getDownloadURL();
-    }).then((urlImagen) => {
-      guardarDatosOferta(urlImagen);
-    });
-  } else {
-    guardarDatosOferta(null);
-  }
+  function guardarOferta(urlImagen){
 
-  function guardarDatosOferta(urlImagen){
     db.ref(`ofertas/${categoria}/${idOferta}`).set({
+
       titulo: titulo,
       descripcion: descripcion,
       valor: valor,
       contacto: contacto,
       categoria: categoria,
-      urlImagen: urlImagen,
-      idUsuario: usuarioActual.uid,
-      nombreUsuario: usuarioActual.displayName || usuarioActual.email,
+      imagen: urlImagen || "",
+      usuario: usuarioActual.email,
+      uid: usuarioActual.uid,
       fecha: Date.now()
-    }).then(() => {
-      alert("✅ Oferta publicada con éxito");
-      cerrarPublicar();
+
+    })
+
+    .then(()=>{
+
+      alert("✅ Oferta publicada");
+
       document.getElementById('titulo').value = '';
       document.getElementById('caracteristicas').value = '';
       document.getElementById('valor').value = '';
       document.getElementById('contacto').value = '';
       document.getElementById('imagenOferta').value = '';
-    }).catch((error) => {
-      alert("❌ Error al publicar: " + error.message);
+
+      cerrarPublicar();
+
+    })
+
+    .catch((error)=>{
+
+      alert("❌ Error guardando: " + error.message);
+
     });
+
   }
-}
-</script>
-</body>
-</html>
+
+  // SI HAY IMAGEN
+  if(archivo){
+
+    const referencia = storage.ref("ofertas/" + idOferta + "_" + archivo.name);
+
+    referencia.put(archivo)
+
+    .then(()=>referencia.getDownloadURL())
+
+    .then((url)=>{
+
+      guardarOferta(url);
+
+    })
+
+    .catch((error)=>{
+
+      alert("❌ Error subiendo imagen: " + error.message);
+
+    });
+
+  } else {
+
+    guardarOferta("");
+
+  }
+  }
 
