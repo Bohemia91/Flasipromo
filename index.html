@@ -5,188 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ofertas Santa Rosa</title>
 
-<!-- Librerías Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
-}
-body{
-background:#f3f3f3;
-min-height:100vh;
-display:flex;
-flex-direction:column;
-}
-.encabezado{
-background:#056b1f;
-color:white;
-padding:15px 10px;
-text-align:center;
-position:relative;
-}
-
-.info-usuario{
-position:absolute;
-top:10px;
-right:15px;
-font-size:12px;
-background:#e3c74b;
-color:#056b1f;
-padding:6px 12px;
-border-radius:20px;
-font-weight:bold;
-box-shadow:0 2px 4px rgba(0,0,0,0.2);
-}
-
-.encabezado h1{
-font-size:20px;
-margin-bottom:5px;
-}
-.encabezado p{
-font-size:12px;
-margin-bottom:10px;
-}
-
-/* Botones */
-.btn-login{
-border:none;
-padding:8px 16px;
-border-radius:12px;
-font-size:13px;
-font-weight:bold;
-cursor:pointer;
-transition:0.2s;
-}
-.btn-login:hover{opacity:0.9;}
-.btn-iniciar{background:white; color:#056b1f;}
-.btn-cerrar{background:#dc3545; color:white;}
-
-.menu{
-flex:1;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-gap:12px;
-padding:20px 15px;
-}
-.btn-menu{
-width:100%;
-max-width:280px;
-padding:15px;
-border-radius:16px;
-background:white;
-border:3px solid #056b1f;
-font-size:15px;
-font-weight:bold;
-color:#056b1f;
-cursor:pointer;
-transition:0.2s;
-}
-.btn-menu:hover{background:#f0f8f2;}
-.btn-publicar{background:#e3c74b; border:none;}
-
-/* Modales */
-.modal{
-display:none;
-position:fixed;
-left:0;
-top:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.6);
-padding:15px;
-z-index:10;
-overflow-y:auto;
-animation:aparecer 0.2s;
-}
-@keyframes aparecer{from{opacity:0;}to{opacity:1;}}
-.modal-contenido{
-background:white;
-max-width:350px;
-margin:40px auto;
-padding:25px;
-border-radius:18px;
-position:relative;
-animation:bajar 0.2s;
-}
-@keyframes bajar{from{transform:translateY(-20px);}to{transform:translateY(0);}}
-.modal h2{
-font-size:18px;
-margin-bottom:20px;
-color:#056b1f;
-}
-input,textarea,select{
-width:100%;
-padding:12px;
-margin-bottom:12px;
-border-radius:12px;
-border:1px solid #ddd;
-font-size:14px;
-}
-textarea{resize:vertical; min-height:80px;}
-input[type="file"]{border:none; padding:5px 0;}
-
-.btn-enviar{
-width:100%;
-padding:13px;
-border:none;
-border-radius:12px;
-background:#056b1f;
-color:white;
-font-weight:bold;
-font-size:14px;
-cursor:pointer;
-transition:0.2s;
-}
-.btn-enviar:hover{background:#04551a;}
-.cerrar{
-float:right;
-font-size:24px;
-cursor:pointer;
-color:#666;
-}
-.cerrar:hover{color:#000;}
-
-.enlace-olvido{
-text-align:center;
-margin-top:10px;
-color:#056b1f;
-font-size:13px;
-cursor:pointer;
-text-decoration:underline;
-}
-.enlace-olvido:hover{color:#04551a;}
-
-.btn-google{
-width:100%;
-padding:12px;
-border-radius:12px;
-border:1px solid #ddd;
-background:white;
-color:#333;
-font-weight:bold;
-font-size:14px;
-margin-bottom:15px;
-cursor:pointer;
-display:flex;
-align-items:center;
-justify-content:center;
-gap:8px;
-transition:0.2s;
-}
-.btn-google:hover{background:#f8f8f8;}
-
-hr{margin:20px 0; border:none; border-top:1px solid #eee;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f3f3f3;min-height:100vh;display:flex;flex-direction:column}
+.encabezado{background:#056b1f;color:white;padding:15px 10px;text-align:center;position:relative}
+.info-usuario{position:absolute;top:10px;right:15px;font-size:12px;background:#e3c74b;color:#056b1f;padding:6px 12px;border-radius:20px;font-weight:bold;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.encabezado h1{font-size:20px;margin-bottom:5px}
+.encabezado p{font-size:12px;margin-bottom:10px}
+.btn-login{border:none;padding:8px 16px;border-radius:12px;font-size:13px;font-weight:bold;cursor:pointer;transition:.2s}
+.btn-login:hover{opacity:.9}
+.btn-iniciar{background:white;color:#056b1f}
+.btn-cerrar{background:#dc3545;color:white}
+.menu{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px;padding:20px 15px}
+.btn-menu{width:100%;max-width:280px;padding:15px;border-radius:16px;background:white;border:3px solid #056b1f;font-size:15px;font-weight:bold;color:#056b1f;cursor:pointer;transition:.2s}
+.btn-menu:hover{background:#f0f8f2}
+.btn-publicar{background:#e3c74b;border:none}
+.modal{display:none;position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.6);padding:15px;z-index:10;overflow-y:auto}
+.modal-contenido{background:white;max-width:350px;margin:40px auto;padding:25px;border-radius:18px;position:relative}
+.modal h2{font-size:18px;margin-bottom:20px;color:#056b1f}
+input,textarea,select{width:100%;padding:12px;margin-bottom:12px;border-radius:12px;border:1px solid #ddd;font-size:14px}
+textarea{resize:vertical;min-height:80px}
+input[type="file"]{border:none;padding:5px 0}
+.btn-enviar{width:100%;padding:13px;border:none;border-radius:12px;background:#056b1f;color:white;font-weight:bold;font-size:14px;cursor:pointer}
+.btn-enviar:hover{background:#04551a}
+.cerrar{float:right;font-size:24px;cursor:pointer;color:#666}
+.cerrar:hover{color:#000}
+.enlace-olvido{text-align:center;margin-top:10px;color:#056b1f;font-size:13px;cursor:pointer;text-decoration:underline}
+.btn-google{width:100%;padding:12px;border-radius:12px;border:1px solid #ddd;background:white;color:#333;font-weight:bold;font-size:14px;margin-bottom:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+hr{margin:20px 0;border:none;border-top:1px solid #eee}
 </style>
 </head>
+
 <body>
 
 <div class="encabezado">
@@ -203,340 +57,338 @@ hr{margin:20px 0; border:none; border-top:1px solid #eee;}
 <button class="btn-menu btn-publicar" onclick="mostrarPublicar()">📝 Publicar oferta</button>
 </div>
 
-<!-- MODAL INICIO SESIÓN -->
 <div class="modal" id="modalLogin">
 <div class="modal-contenido">
 <span class="cerrar" onclick="cerrarLogin()">×</span>
 <h2>Iniciar sesión</h2>
+
 <button class="btn-google" onclick="iniciarGoogle()">
-<img src="https://www.gstatic.com/firebasejs/9.22.2/images/icons/google.svg" width="20"> Iniciar con Google
+<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+Iniciar con Google
 </button>
+
 <hr>
+
 <input type="email" id="loginEmail" placeholder="Correo">
 <input type="password" id="loginPass" placeholder="Contraseña">
 <button class="btn-enviar" onclick="iniciarSesion()">Entrar</button>
+
 <p class="enlace-olvido" onclick="mostrarOlvido()">¿Olvidaste tu contraseña?</p>
+
 <hr>
+
 <h2>Crear cuenta</h2>
+
 <input type="text" id="regNombre" placeholder="Nombre completo">
 <input type="email" id="regEmail" placeholder="Correo">
-<input type="password" id="regPass" placeholder="Contraseña (mínimo 6 caracteres)">
+<input type="password" id="regPass" placeholder="Contraseña">
+
 <button class="btn-enviar" onclick="registrarUsuario()">Crear cuenta</button>
 </div>
 </div>
 
-<!-- MODAL RECUPERAR CONTRASEÑA -->
 <div class="modal" id="modalOlvido">
 <div class="modal-contenido">
 <span class="cerrar" onclick="cerrarOlvido()">×</span>
 <h2>Recuperar contraseña</h2>
-<p style="font-size:13px; margin-bottom:15px;">Ingresa tu correo y te enviaremos un enlace para cambiar tu contraseña</p>
+
 <input type="email" id="correoRecuperar" placeholder="Tu correo">
+
 <button class="btn-enviar" onclick="enviarCorreoRecuperacion()">Enviar enlace</button>
 </div>
 </div>
 
-<!-- MODAL PUBLICAR OFERTA -->
 <div class="modal" id="modalPublicar">
 <div class="modal-contenido">
 <span class="cerrar" onclick="cerrarPublicar()">×</span>
+
 <h2>Publicar oferta</h2>
-<input type="text" id="titulo" placeholder="Título de la oferta">
-<textarea id="caracteristicas" placeholder="Descripción y detalles" rows="4"></textarea>
-<input type="number" id="valor" placeholder="Precio" min="0">
-<input type="text" id="contacto" placeholder="Número de contacto">
-<p style="font-size:14px; font-weight:bold; color:#056b1f; margin:10px 0 5px;">📸 Foto de la oferta (opcional):</p>
+
+<input type="text" id="titulo" placeholder="Título">
+<textarea id="caracteristicas" placeholder="Descripción"></textarea>
+<input type="number" id="valor" placeholder="Precio">
+<input type="text" id="contacto" placeholder="Contacto">
 <input type="file" id="imagenOferta" accept="image/*">
+
 <select id="categoria">
 <option value="nuevos">Productos nuevos</option>
 <option value="segunda">Productos segunda</option>
 <option value="servicios">Servicios</option>
 </select>
-<button class="btn-enviar" onclick="publicarOferta()">Publicar ahora</button>
+
+<button class="btn-enviar" onclick="publicarOferta()">Publicar</button>
 </div>
 </div>
 
 <script>
-// CONFIGURACIÓN FIREBASE
-const firebaseConfig = {
-  apiKey: "AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
-  authDomain: "flasipromo.firebaseapp.com",
-  databaseURL: "https://flasipromo-default-rtdb.firebaseio.com",
-  projectId: "flasipromo",
-  storageBucket: "flasipromo.firebasestorage.app",
-  messagingSenderId: "439920052201",
-  appId: "1:439920052201:ddf170b3be99b732cced78",
-  measurementId: "G-LWKKN5ESQR"
+
+const firebaseConfig={
+apiKey:"AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
+authDomain:"flasipromo.firebaseapp.com",
+databaseURL:"https://flasipromo-default-rtdb.firebaseio.com",
+projectId:"flasipromo",
+storageBucket:"flasipromo.appspot.com",
+messagingSenderId:"439920052201",
+appId:"1:439920052201:ddf170b3be99b732cced78"
 };
 
-// INICIALIZAR FIREBASE
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const auth = firebase.auth();
-const storage = firebase.storage();
-let usuarioActual = null;
 
-// MANTENER SESIÓN ACTIVA
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+const db=firebase.database();
+const auth=firebase.auth();
+const storage=firebase.storage();
 
-// DETECTAR CAMBIOS EN LA SESIÓN
-auth.onAuthStateChanged((usuario) => {
-  usuarioActual = usuario;
-  actualizarInfoUsuario();
-  cambiarBotonSesion();
+let usuarioActual=null;
+
+auth.onAuthStateChanged((usuario)=>{
+usuarioActual=usuario;
+actualizarInfoUsuario();
+cambiarBotonSesion();
 });
 
-// ACTUALIZAR INFORMACIÓN DEL USUARIO
 function actualizarInfoUsuario(){
-  const elementoInfo = document.getElementById("infoUsuario");
-  if(usuarioActual){
-    const nombre = usuarioActual.displayName || usuarioActual.email;
-    elementoInfo.innerHTML = `✅ Conectado como: <b>${nombre}</b>`;
-    elementoInfo.style.background = "#e3c74b";
-    elementoInfo.style.color = "#056b1f";
-  } else {
-    elementoInfo.innerHTML = "❌ No has iniciado sesión";
-    elementoInfo.style.background = "white";
-    elementoInfo.style.color = "#056b1f";
-  }
+const info=document.getElementById("infoUsuario");
+
+if(usuarioActual){
+info.innerHTML=`✅ ${usuarioActual.email}`;
+}else{
+info.innerHTML="❌ No has iniciado sesión";
+}
 }
 
-// CAMBIAR BOTÓN DE INICIAR / CERRAR SESIÓN
 function cambiarBotonSesion(){
-  const boton = document.getElementById("botonSesion");
-  if(usuarioActual){
-    boton.innerHTML = "Cerrar Sesión";
-    boton.classList.remove("btn-iniciar");
-    boton.classList.add("btn-cerrar");
-  } else {
-    boton.innerHTML = "Iniciar Sesión";
-    boton.classList.remove("btn-cerrar");
-    boton.classList.add("btn-iniciar");
-  }
+const boton=document.getElementById("botonSesion");
+
+if(usuarioActual){
+boton.innerHTML="Cerrar Sesión";
+boton.classList.remove("btn-iniciar");
+boton.classList.add("btn-cerrar");
+}else{
+boton.innerHTML="Iniciar Sesión";
+boton.classList.remove("btn-cerrar");
+boton.classList.add("btn-iniciar");
+}
 }
 
-// ACCIÓN DEL BOTÓN
 function accionSesion(){
-  if(usuarioActual){
-    cerrarSesion();
-  } else {
-    abrirLogin();
-  }
+if(usuarioActual){
+cerrarSesion();
+}else{
+abrirLogin();
+}
 }
 
-// FUNCIONES BÁSICAS
 function abrirCategoria(categoria){
-  window.location.href = `categoria.html?categoria=${categoria}`;
+window.location.href=`categoria.html?categoria=${categoria}`;
 }
+
 function abrirLogin(){
-  document.getElementById('modalLogin').style.display = 'block';
+document.getElementById("modalLogin").style.display="block";
 }
+
 function cerrarLogin(){
-  document.getElementById('modalLogin').style.display = 'none';
+document.getElementById("modalLogin").style.display="none";
 }
+
 function mostrarOlvido(){
-  cerrarLogin();
-  document.getElementById('modalOlvido').style.display = 'block';
+cerrarLogin();
+document.getElementById("modalOlvido").style.display="block";
 }
+
 function cerrarOlvido(){
-  document.getElementById('modalOlvido').style.display = 'none';
+document.getElementById("modalOlvido").style.display="none";
 }
+
 function mostrarPublicar(){
-  if(usuarioActual){
-    document.getElementById('modalPublicar').style.display = 'block';
-  } else {
-    alert('Debes iniciar sesión primero para publicar ofertas');
-    abrirLogin();
-  }
+if(usuarioActual){
+document.getElementById("modalPublicar").style.display="block";
+}else{
+alert("⚠️ Debes iniciar sesión");
+abrirLogin();
 }
+}
+
 function cerrarPublicar(){
-  document.getElementById('modalPublicar').style.display = 'none';
+document.getElementById("modalPublicar").style.display="none";
 }
 
-// CERRAR SESIÓN
-function cerrarSesion(){
-  if(confirm("¿Seguro que quieres cerrar sesión?")){
-    auth.signOut().then(() => {
-      alert("✅ Sesión cerrada correctamente");
-    }).catch((error) => {
-      alert("❌ Error: " + error.message);
-    });
-  }
-}
-
-// REGISTRAR USUARIO
 function registrarUsuario(){
-  const nombre = document.getElementById('regNombre').value.trim();
-  const email = document.getElementById('regEmail').value.trim();
-  const pass = document.getElementById('regPass').value.trim();
 
-  if(!nombre || !email || !pass){
-    alert("⚠️ Llena todos los campos");
-    return;
-  }
-  if(pass.length < 6){
-    alert("⚠️ La contraseña debe tener al menos 6 caracteres");
-    return;
-  }
+const nombre=document.getElementById("regNombre").value.trim();
+const email=document.getElementById("regEmail").value.trim();
+const pass=document.getElementById("regPass").value.trim();
 
-  auth.createUserWithEmailAndPassword(email, pass)
-  .then((cred) => {
-    return db.ref('usuarios/' + cred.user.uid).set({
-      nombre: nombre,
-      correo: email,
-      fechaRegistro: Date.now()
-    });
-  })
-  .then(() => {
-    alert("✅ Cuenta creada exitosamente");
-    cerrarLogin();
-  })
-  .catch((error) => {
-    alert("❌ Error: " + error.message);
-  });
+if(!nombre||!email||!pass){
+alert("⚠️ Completa todos los campos");
+return;
 }
 
-// INICIAR SESIÓN CON CORREO
+auth.createUserWithEmailAndPassword(email,pass)
+
+.then((cred)=>{
+return db.ref("usuarios/"+cred.user.uid).set({
+nombre:nombre,
+correo:email,
+fecha:Date.now()
+});
+})
+
+.then(()=>{
+alert("✅ Cuenta creada");
+cerrarLogin();
+})
+
+.catch((error)=>{
+alert("❌ "+error.message);
+});
+
+}
+
 function iniciarSesion(){
-  const email = document.getElementById('loginEmail').value.trim();
-  const pass = document.getElementById('loginPass').value.trim();
 
-  if(!email || !pass){
-    alert("⚠️ Ingresa tu correo y contraseña");
-    return;
-  }
+const email=document.getElementById("loginEmail").value.trim();
+const pass=document.getElementById("loginPass").value.trim();
 
-  auth.signInWithEmailAndPassword(email, pass)
-  .then(() => {
-    alert("✅ Sesión iniciada correctamente");
-    cerrarLogin();
-  })
-  .catch((error) => {
-    let mensaje = "Error al iniciar sesión";
-    switch(error.code){
-      case 'auth/invalid-email': mensaje = "Correo no válido"; break;
-      case 'auth/user-not-found': mensaje = "No existe una cuenta con este correo"; break;
-      case 'auth/wrong-password': mensaje = "Contraseña incorrecta"; break;
-    }
-    alert("❌ " + mensaje);
-  });
+auth.signInWithEmailAndPassword(email,pass)
+
+.then(()=>{
+alert("✅ Sesión iniciada");
+cerrarLogin();
+})
+
+.catch((error)=>{
+alert("❌ "+error.message);
+});
+
 }
 
-// INICIAR SESIÓN CON GOOGLE
 function iniciarGoogle(){
-  const proveedorGoogle = new auth.GoogleAuthProvider();
-  auth.signInWithPopup(proveedorGoogle)
-  .then(() => {
-    alert("✅ Sesión iniciada con Google");
-    cerrarLogin();
-  })
-  .catch((error) => {
-    alert("❌ Error: " + error.message);
-  });
+
+const proveedorGoogle=new firebase.auth.GoogleAuthProvider();
+
+auth.signInWithPopup(proveedorGoogle)
+
+.then(()=>{
+alert("✅ Sesión iniciada");
+cerrarLogin();
+})
+
+.catch((error)=>{
+alert("❌ "+error.message);
+});
+
 }
 
-// RECUPERAR CONTRASEÑA
 function enviarCorreoRecuperacion(){
-  const email = document.getElementById('correoRecuperar').value.trim();
-  if(!email){
-    alert("⚠️ Ingresa tu correo");
-    return;
-  }
-  auth.sendPasswordResetEmail(email)
-  .then(() => {
-    alert("✅ Enlace enviado, revisa tu correo");
-    cerrarOlvido();
-  })
-  .catch((error) => {
-    alert("❌ Error: " + error.message);
-  });
+
+const email=document.getElementById("correoRecuperar").value.trim();
+
+auth.sendPasswordResetEmail(email)
+
+.then(()=>{
+alert("✅ Revisa tu correo");
+cerrarOlvido();
+})
+
+.catch((error)=>{
+alert("❌ "+error.message);
+});
+
 }
 
-// PUBLICAR NUEVA OFERTA
+function cerrarSesion(){
+
+auth.signOut()
+
+.then(()=>{
+alert("✅ Sesión cerrada");
+})
+
+.catch((error)=>{
+alert("❌ "+error.message);
+});
+
+}
+
 function publicarOferta(){
 
-  if(!usuarioActual){
-    alert("⚠️ Debes iniciar sesión");
-    return;
-  }
+if(!usuarioActual){
+alert("⚠️ Debes iniciar sesión");
+return;
+}
 
-  const titulo = document.getElementById('titulo').value.trim();
-  const descripcion = document.getElementById('caracteristicas').value.trim();
-  const valor = document.getElementById('valor').value.trim();
-  const contacto = document.getElementById('contacto').value.trim();
-  const categoria = document.getElementById('categoria').value;
-  const archivo = document.getElementById('imagenOferta').files[0];
+const titulo=document.getElementById('titulo').value.trim();
+const descripcion=document.getElementById('caracteristicas').value.trim();
+const valor=document.getElementById('valor').value.trim();
+const contacto=document.getElementById('contacto').value.trim();
+const categoria=document.getElementById('categoria').value;
+const archivo=document.getElementById('imagenOferta').files[0];
 
-  if(!titulo || !descripcion || !valor || !contacto){
-    alert("⚠️ Completa todos los campos");
-    return;
-  }
+if(!titulo||!descripcion||!valor||!contacto){
+alert("⚠️ Completa todos los campos");
+return;
+}
 
-  const idOferta = Date.now();
+const idOferta=Date.now();
 
-  function guardarOferta(urlImagen){
+function guardarOferta(urlImagen){
 
-    db.ref(`ofertas/${categoria}/${idOferta}`).set({
+db.ref(`ofertas/${categoria}/${idOferta}`).set({
+titulo:titulo,
+descripcion:descripcion,
+valor:valor,
+contacto:contacto,
+categoria:categoria,
+imagen:urlImagen||"",
+usuario:usuarioActual.email,
+uid:usuarioActual.uid,
+fecha:Date.now()
+})
 
-      titulo: titulo,
-      descripcion: descripcion,
-      valor: valor,
-      contacto: contacto,
-      categoria: categoria,
-      imagen: urlImagen || "",
-      usuario: usuarioActual.email,
-      uid: usuarioActual.uid,
-      fecha: Date.now()
+.then(()=>{
 
-    })
+alert("✅ Oferta publicada");
 
-    .then(()=>{
+document.getElementById('titulo').value='';
+document.getElementById('caracteristicas').value='';
+document.getElementById('valor').value='';
+document.getElementById('contacto').value='';
+document.getElementById('imagenOferta').value='';
 
-      alert("✅ Oferta publicada");
+cerrarPublicar();
 
-      document.getElementById('titulo').value = '';
-      document.getElementById('caracteristicas').value = '';
-      document.getElementById('valor').value = '';
-      document.getElementById('contacto').value = '';
-      document.getElementById('imagenOferta').value = '';
+})
 
-      cerrarPublicar();
+.catch((error)=>{
+alert("❌ Error guardando: "+error.message);
+});
 
-    })
+}
 
-    .catch((error)=>{
+if(archivo){
 
-      alert("❌ Error guardando: " + error.message);
+const referencia=storage.ref("ofertas/"+idOferta+"_"+archivo.name);
 
-    });
+referencia.put(archivo)
 
-  }
+.then(()=>referencia.getDownloadURL())
 
-  // SI HAY IMAGEN
-  if(archivo){
+.then((url)=>{
+guardarOferta(url);
+})
 
-    const referencia = storage.ref("ofertas/" + idOferta + "_" + archivo.name);
+.catch((error)=>{
+alert("❌ Error subiendo imagen: "+error.message);
+});
 
-    referencia.put(archivo)
+}else{
 
-    .then(()=>referencia.getDownloadURL())
+guardarOferta("");
 
-    .then((url)=>{
+}
 
-      guardarOferta(url);
+}
 
-    })
-
-    .catch((error)=>{
-
-      alert("❌ Error subiendo imagen: " + error.message);
-
-    });
-
-  } else {
-
-    guardarOferta("");
-
-  }
-  }
-
+</script>
+</body>
+</html>
