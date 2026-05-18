@@ -3,235 +3,109 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Categoría</title>
+<title>Categoría - Ofertas Santa Rosa</title>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
-}
-
-body{
-background:#f3f3f3;
-}
-
-.encabezado{
-background:#056b1f;
-padding:14px;
-}
-
-.btn-regresar{
-width:100%;
-max-width:170px;
-padding:11px;
-border-radius:14px;
-background:white;
-border:3px solid #056b1f;
-font-size:14px;
-font-weight:bold;
-color:#056b1f;
-margin-bottom:12px;
-}
-
-.buscador{
-background:white;
-padding:12px;
-border-radius:14px;
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.buscador input{
-border:none;
-outline:none;
-width:100%;
-font-size:14px;
-}
-
-.lista{
-padding:14px;
-display:flex;
-flex-direction:column;
-gap:12px;
-}
-
-.tarjeta{
-background:white;
-padding:14px;
-border-radius:16px;
-}
-
-.tarjeta h3{
-font-size:16px;
-margin-bottom:8px;
-color:#056b1f;
-}
-
-.tarjeta p{
-font-size:13px;
-margin-bottom:8px;
-}
-
-.precio{
-font-size:17px;
-font-weight:bold;
-color:#d4af37;
-}
-
-.btn-detalle{
-margin-top:10px;
-width:100%;
-padding:12px;
-border:none;
-border-radius:12px;
-background:#056b1f;
-color:white;
-font-weight:bold;
-}
-
-.vacio{
-text-align:center;
-color:#666;
-margin-top:50px;
-padding:20px;
-}
-
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f3f3f3;}
+.encabezado{background:#056b1f;padding:14px;}
+.btn-regresar{width:100%;max-width:170px;padding:11px;border-radius:14px;background:white;border:3px solid #056b1f;font-size:14px;font-weight:bold;color:#056b1f;margin-bottom:12px;}
+.buscador{background:white;padding:12px;border-radius:14px;display:flex;align-items:center;gap:10px;margin-bottom:15px;}
+.buscador input{border:none;outline:none;width:100%;font-size:14px;}
+.lista{padding:14px;display:flex;flex-direction:column;gap:12px;}
+.tarjeta{background:white;padding:14px;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.1);}
+.tarjeta h3{font-size:16px;margin-bottom:8px;color:#056b1f;}
+.tarjeta p{font-size:13px;margin-bottom:8px;color:#333;}
+.precio{font-size:17px;font-weight:bold;color:#d4af37;margin:8px 0;}
+.vacio{text-align:center;color:#666;margin-top:50px;padding:20px;}
 </style>
 </head>
 <body>
 
 <div class="encabezado">
-
-<button class="btn-regresar"
-onclick="window.location.href='index.html'">
-← Regresar
-</button>
-
-<div class="buscador">
-<span>🔍</span>
-
-<input type="text"
-id="busqueda"
-placeholder="Buscar productos...">
-</div>
-
+  <button class="btn-regresar" onclick="window.location.href='index.html'">← Regresar</button>
+  <div class="buscador">
+    <span>🔍</span>
+    <input type="text" id="busqueda" placeholder="Buscar productos...">
+  </div>
 </div>
 
 <div class="lista" id="listaProductos"></div>
-
-<div class="vacio" id="mensajeVacio" style="display:none;">
-<h3>😕 Todavía no hay anuncios en esta categoría</h3>
-</div>
+<div class="vacio" id="mensajeVacio" style="display:none;"><h3>😕 Todavía no hay anuncios</h3></div>
 
 <script>
-
-// ✅ TUS DATOS REALES DE FIREBASE (YA LOS PUSE YO)
+// ✅ MISMA CONFIGURACIÓN EXACTA
 const firebaseConfig = {
-apiKey:"AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
-authDomain:"flasipromo.firebaseapp.com",
-databaseURL:"https://flasipromo-default-rtdb.firebaseio.com",
-projectId:"flasipromo",
-storageBucket:"flasipromo.appspot.com",
-messagingSenderId:"439920052201",
-appId:"1:439920052201:ddf170b3be99b732cced78"
+  apiKey: "AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
+  authDomain: "flasipromo.firebaseapp.com",
+  databaseURL: "https://flasipromo-default-rtdb.firebaseio.com",
+  projectId: "flasipromo",
+  storageBucket: "flasipromo.appspot.com",
+  messagingSenderId: "439920052201",
+  appId: "1:439920052201:ddf170b3be99b732cced78"
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const db = firebase.database();
 
+// SABER QUÉ CATEGORÍA CARGAR
 const parametros = new URLSearchParams(window.location.search);
-const categoria = parametros.get('categoria'); // ej: "nuevos", "segunda", "servicios"
+const categoria = parametros.get('categoria');
 
 const lista = document.getElementById('listaProductos');
 const mensajeVacio = document.getElementById('mensajeVacio');
 const buscador = document.getElementById('busqueda');
-
 let productos = [];
 
+// ✅ FUNCIÓN PINTAR ANUNCIOS
 function renderizar(listaProductos){
+  lista.innerHTML = '';
+  mensajeVacio.style.display = 'none';
 
-lista.innerHTML='';
-mensajeVacio.style.display = 'none';
+  if(listaProductos.length === 0){
+    mensajeVacio.style.display = 'block';
+    return;
+  }
 
-if(listaProductos.length === 0){
-mensajeVacio.style.display = 'block';
-return;
+  listaProductos.forEach(producto => {
+    const tarjeta = document.createElement('div');
+    tarjeta.className = 'tarjeta';
+    tarjeta.innerHTML = `
+      <h3>${producto.titulo || 'Sin título'}</h3>
+      <p>${producto.descripcion || 'Sin descripción'}</p>
+      <div class="precio">$ ${producto.valor || '0'}</div>
+      <p><strong>Contacto:</strong> ${producto.contacto || 'Sin dato'}</p>
+    `;
+    lista.appendChild(tarjeta);
+  });
 }
 
-listaProductos.forEach(producto=>{
-
-const tarjeta=document.createElement('div');
-tarjeta.className='tarjeta';
-
-tarjeta.innerHTML=`
-<h3>${producto.titulo || 'Sin título'}</h3>
-<p>${producto.descripcion || 'Sin descripción'}</p>
-<div class="precio">$${producto.valor || '0'}</div>
-<p><strong>Contacto:</strong> ${producto.contacto || 'Sin dato'}</p>
-
-<button class="btn-detalle"
-onclick="verDetalle('${producto.id}')">
-Ver detalles
-</button>
-`;
-
-lista.appendChild(tarjeta);
-
+// ✅ LEER DATOS DE LA BASE (RUTA CORRECTA: ofertas/[categoria])
+db.ref('ofertas/' + categoria).orderByChild('fecha').on('value', datos => {
+  productos = [];
+  if(datos.exists()){
+    datos.forEach(hijo => {
+      const prod = hijo.val();
+      prod.id = hijo.key;
+      productos.push(prod);
+    });
+    // ORDENAR DEL MÁS NUEVO AL MÁS VIEJO
+    productos.sort((a,b) => b.fecha - a.fecha);
+  }
+  renderizar(productos);
 });
 
-}
-
-function verDetalle(id){
-alert("Aquí iría la página de detalles con el ID: " + id);
-// cuando quieras, creamos el archivo detalle.html
-}
-
-// ✅ CORREGIDO: LEEMOS DE DONDE SE ESTÁN GUARDANDO LOS DATOS
-db.ref('ofertas/' + categoria).on('value',(datos)=>{
-
-productos=[];
-
-if(datos.exists()){
-
-datos.forEach((hijo)=>{
-
-const producto=hijo.val();
-producto.id=hijo.key;
-
-// ✅ Ya no filtramos por fechaExpiracion porque no lo usamos
-productos.push(producto);
-
+// ✅ BUSCADOR
+buscador.addEventListener('input', () => {
+  const texto = buscador.value.toLowerCase();
+  const filtrados = productos.filter(prod => 
+    (prod.titulo || "").toLowerCase().includes(texto)
+  );
+  renderizar(filtrados);
 });
-
-// Ordenamos del más nuevo al más viejo
-productos.sort((a,b) => b.fecha - a.fecha);
-
-}
-
-renderizar(productos);
-
-});
-
-buscador.addEventListener('input',()=>{
-
-const texto=buscador.value.toLowerCase();
-const filtrados=productos.filter(producto=>
-(producto.titulo || "").toLowerCase().includes(texto)
-);
-
-renderizar(filtrados);
-
-});
-
 </script>
 
 </body>
