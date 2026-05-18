@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ofertas Santa Rosa</title>
 
-<!-- Librerías cargadas de forma rápida -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js" defer></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js" defer></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js" defer></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js" defer></script>
+<!-- Librerías cargadas correctamente -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 
 <style>
 *{
@@ -238,8 +238,8 @@ hr{margin:20px 0; border:none; border-top:1px solid #eee;}
 
 <hr>
 
-<input type="email" id="loginEmail" placeholder="Correo" autocomplete="email">
-<input type="password" id="loginPass" placeholder="Contraseña" type="password" autocomplete="current-password">
+<input type="email" id="loginEmail" placeholder="Correo">
+<input type="password" id="loginPass" placeholder="Contraseña">
 <button class="btn-enviar" onclick="iniciarSesion()">Entrar</button>
 
 <p class="enlace-olvido" onclick="mostrarOlvido()">¿Olvidaste tu contraseña?</p>
@@ -270,17 +270,17 @@ hr{margin:20px 0; border:none; border-top:1px solid #eee;}
 <span class="cerrar" onclick="cerrarPublicar()">×</span>
 <h2>Publicar oferta</h2>
 
-<input type="text" id="titulo" placeholder="Título de la oferta" value="Celular gama media">
-<textarea id="caracteristicas" placeholder="Descripción y detalles" rows="4">Económico, poco uso, en buen estado</textarea>
-<input type="number" id="valor" placeholder="Precio" value="150000" min="0">
-<input type="text" id="contacto" placeholder="Número de contacto" value="3005554433">
+<input type="text" id="titulo" placeholder="Título de la oferta">
+<textarea id="caracteristicas" placeholder="Descripción y detalles" rows="4"></textarea>
+<input type="number" id="valor" placeholder="Precio" min="0">
+<input type="text" id="contacto" placeholder="Número de contacto">
 
 <p style="font-size:14px; font-weight:bold; color:#056b1f; margin:10px 0 5px;">📸 Foto de la oferta (opcional):</p>
 <input type="file" id="imagenOferta" accept="image/*">
 
 <select id="categoria">
 <option value="nuevos">Productos nuevos</option>
-<option value="segunda" selected>Productos segunda</option>
+<option value="segunda">Productos segunda</option>
 <option value="servicios">Servicios</option>
 </select>
 
@@ -390,8 +390,6 @@ function cerrarSesion(){
   if(confirm("¿Seguro que quieres cerrar sesión?")){
     auth.signOut().then(() => {
       alert("✅ Sesión cerrada correctamente");
-      actualizarInfoUsuario();
-      cambiarBotonSesion();
     }).catch((error) => {
       alert("❌ Error: " + error.message);
     });
@@ -424,8 +422,6 @@ function registrarUsuario(){
   .then(() => {
     alert("✅ Cuenta creada exitosamente");
     cerrarLogin();
-    actualizarInfoUsuario();
-    cambiarBotonSesion();
   })
   .catch((error) => {
     alert("❌ Error: " + error.message);
@@ -446,8 +442,6 @@ function iniciarSesion(){
   .then(() => {
     alert("✅ Sesión iniciada correctamente");
     cerrarLogin();
-    actualizarInfoUsuario();
-    cambiarBotonSesion();
   })
   .catch((error) => {
     let mensaje = "Error al iniciar sesión";
@@ -457,5 +451,31 @@ function iniciarSesion(){
       case 'auth/wrong-password': mensaje = "Contraseña incorrecta"; break;
     }
     alert("❌ " + mensaje);
+  });
+}
 
+// INICIAR SESIÓN CON GOOGLE
+function iniciarGoogle(){
+  const proveedorGoogle = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(proveedorGoogle)
+  .then(() => {
+    alert("✅ Sesión iniciada con Google");
+    cerrarLogin();
+  })
+  .catch((error) => {
+    alert("❌ Error: " + error.message);
+  });
+}
+
+// RECUPERAR CONTRASEÑA
+function enviarCorreoRecuperacion(){
+  const email = document.getElementById('correoRecuperar').value.trim();
+  if(!email){
+    alert("⚠️ Ingresa tu correo");
+    return;
+  }
+  auth.sendPasswordResetEmail(email)
+  .then(() => {
+    alert("✅ Enlace enviado, revisa tu correo");
+    cerrarOlv
   
