@@ -8,7 +8,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
@@ -30,9 +29,8 @@ body{background:#f3f3f3;min-height:100vh;display:flex;flex-direction:column}
 .modal h2{font-size:18px;margin-bottom:20px;color:#056b1f}
 input,textarea,select{width:100%;padding:12px;margin-bottom:12px;border-radius:12px;border:1px solid #ddd;font-size:14px}
 textarea{resize:vertical;min-height:80px}
-input[type="file"]{border:none;padding:5px 0}
 .btn-enviar{width:100%;padding:13px;border:none;border-radius:12px;background:#056b1f;color:white;font-weight:bold;font-size:14px;cursor:pointer}
-.btn-enviar:hover{background:#04551a}
+.btn-enviar:hover{background:#04551a)
 .cerrar{float:right;font-size:24px;cursor:pointer;color:#666}
 .cerrar:hover{color:#000}
 .enlace-olvido{text-align:center;margin-top:10px;color:#056b1f;font-size:13px;cursor:pointer;text-decoration:underline}
@@ -108,7 +106,6 @@ Iniciar con Google
 <textarea id="caracteristicas" placeholder="Descripción"></textarea>
 <input type="text" id="valor" placeholder="Precio" inputmode="numeric">
 <input type="text" id="contacto" placeholder="Contacto">
-<input type="file" id="imagenOferta" accept="image/*">
 
 <select id="categoria">
 <option value="nuevos">Productos nuevos</option>
@@ -125,8 +122,8 @@ Iniciar con Google
 const firebaseConfig={
 apiKey:"AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
 authDomain:"flasipromo.firebaseapp.com",
-// ✅ TU DIRECCIÓN EXACTA Y CORRECTA:
-databaseURL:"https://flasipromo-default-rtdb.firebaseio.com/",
+// ✅ DIRECCIÓN CORREGIDA SIN BARRA FINAL:
+databaseURL:"https://flasipromo-default-rtdb.firebaseio.com",
 projectId:"flasipromo",
 storageBucket:"flasipromo.appspot.com",
 messagingSenderId:"439920052201",
@@ -134,207 +131,117 @@ appId:"1:439920052201:ddf170b3be99b732cced78"
 };
 
 firebase.initializeApp(firebaseConfig);
-
-const db=firebase.database();
-const auth=firebase.auth();
-const storage=firebase.storage();
+const db = firebase.database();
+const auth = firebase.auth();
 
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-let usuarioActual=null;
+let usuarioActual = null;
 
-auth.onAuthStateChanged((usuario)=>{
-usuarioActual=usuario;
+auth.onAuthStateChanged(usuario => {
+usuarioActual = usuario;
 actualizarInfoUsuario();
 cambiarBotonSesion();
 });
 
 function actualizarInfoUsuario(){
-const info=document.getElementById("infoUsuario");
-if(usuarioActual){
-info.innerHTML=`✅ ${usuarioActual.email}`;
-}else{
-info.innerHTML="❌ No has iniciado sesión";
-}
+const info = document.getElementById("infoUsuario");
+info.innerHTML = usuarioActual ? `✅ ${usuarioActual.email}` : "❌ No has iniciado sesión";
 }
 
 function cambiarBotonSesion(){
-const boton=document.getElementById("botonSesion");
+const boton = document.getElementById("botonSesion");
 if(usuarioActual){
-boton.innerHTML="Cerrar Sesión";
+boton.innerHTML = "Cerrar Sesión";
 boton.classList.remove("btn-iniciar");
 boton.classList.add("btn-cerrar");
-}else{
-boton.innerHTML="Iniciar Sesión";
+} else {
+boton.innerHTML = "Iniciar Sesión";
 boton.classList.remove("btn-cerrar");
 boton.classList.add("btn-iniciar");
 }
 }
 
-function accionSesion(){
-if(usuarioActual){
-cerrarSesion();
-}else{
-abrirLogin();
-}
-}
-
-function abrirCategoria(categoria){
-window.location.href=`categoria.html?categoria=${categoria}`;
-}
-
-function abrirLogin(){
-document.getElementById("modalLogin").style.display="block";
-}
-
-function cerrarLogin(){
-document.getElementById("modalLogin").style.display="none";
-}
-
-function mostrarOlvido(){
-cerrarLogin();
-document.getElementById("modalOlvido").style.display="block";
-}
-
-function cerrarOlvido(){
-document.getElementById("modalOlvido").style.display="none";
-}
-
-function mostrarPublicar(){
-if(usuarioActual){
-document.getElementById("modalPublicar").style.display="block";
-}else{
-alert("⚠️ Debes iniciar sesión");
-abrirLogin();
-}
-}
-
-function cerrarPublicar(){
-document.getElementById("modalPublicar").style.display="none";
-}
+function accionSesion(){ usuarioActual ? cerrarSesion() : abrirLogin(); }
+function abrirCategoria(categoria){ window.location.href = `categoria.html?categoria=${categoria}`; }
+function abrirLogin(){ document.getElementById("modalLogin").style.display = "block"; }
+function cerrarLogin(){ document.getElementById("modalLogin").style.display = "none"; }
+function mostrarOlvido(){ cerrarLogin(); document.getElementById("modalOlvido").style.display = "block"; }
+function cerrarOlvido(){ document.getElementById("modalOlvido").style.display = "none"; }
+function mostrarPublicar(){ usuarioActual ? document.getElementById("modalPublicar").style.display = "block") : (alert("⚠️ Debes iniciar sesión"), abrirLogin()); }
+function cerrarPublicar(){ document.getElementById("modalPublicar").style.display = "none"; }
 
 function registrarUsuario(){
-const nombre=document.getElementById("regNombre").value.trim();
-const email=document.getElementById("regEmail").value.trim();
-const pass=document.getElementById("regPass").value.trim();
-
-if(!nombre||!email||!pass){
-alert("⚠️ Completa todos los campos");
-return;
-}
-
+const nombre = document.getElementById("regNombre").value.trim();
+const email = document.getElementById("regEmail").value.trim();
+const pass = document.getElementById("regPass").value.trim();
+if(!nombre || !email || !pass) return alert("⚠️ Completa todo");
 auth.createUserWithEmailAndPassword(email,pass)
-.then((cred)=>{
-return db.ref("usuarios/"+cred.user.uid).set({nombre:nombre,correo:email,fecha:Date.now()});
-})
-.then(()=>{alert("✅ Cuenta creada");cerrarLogin();})
-.catch((error)=>{alert("❌ "+error.message);});
+.then(cred => db.ref("usuarios/" + cred.user.uid).set({nombre, correo:email, fecha:Date.now()}))
+.then(() => { alert("✅ Cuenta creada"); cerrarLogin(); })
+.catch(e => alert("❌ " + e.message));
 }
 
 function iniciarSesion(){
-const email=document.getElementById("loginEmail").value.trim();
-const pass=document.getElementById("loginPass").value.trim();
-
+const email = document.getElementById("loginEmail").value.trim();
+const pass = document.getElementById("loginPass").value.trim();
 auth.signInWithEmailAndPassword(email,pass)
-.then(()=>{alert("✅ Sesión iniciada");cerrarLogin();})
-.catch((error)=>{alert("❌ "+error.message);});
+.then(() => { alert("✅ Sesión iniciada"); cerrarLogin(); })
+.catch(e => alert("❌ " + e.message));
 }
 
 function iniciarGoogle(){
-const proveedorGoogle=new firebase.auth.GoogleAuthProvider();
-auth.signInWithPopup(proveedorGoogle)
-.then(()=>{alert("✅ Sesión iniciada");cerrarLogin();})
-.catch((error)=>{alert("❌ "+error.message);});
+const prov = new firebase.auth.GoogleAuthProvider();
+auth.signInWithPopup(prov)
+.then(() => { alert("✅ Sesión iniciada"); cerrarLogin(); })
+.catch(e => alert("❌ " + e.message));
 }
 
 function enviarCorreoRecuperacion(){
-const email=document.getElementById("correoRecuperar").value.trim();
+const email = document.getElementById("correoRecuperar").value.trim();
 auth.sendPasswordResetEmail(email)
-.then(()=>{alert("✅ Revisa tu correo");cerrarOlvido();})
-.catch((error)=>{alert("❌ "+error.message);});
+.then(() => { alert("✅ Revisa tu correo"); cerrarOlvido(); })
+.catch(e => alert("❌ " + e.message));
 }
 
-function cerrarSesion(){
-auth.signOut()
-.then(()=>{alert("✅ Sesión cerrada");})
-.catch((error)=>{alert("❌ "+error.message);});
-}
+function cerrarSesion(){ auth.signOut().then(() => alert("✅ Sesión cerrada")).catch(e => alert("❌ " + e.message)); }
 
-// ✅ FUNCIÓN PUBLICAR ARREGLADA CON TU DIRECCIÓN
+// ✅ FUNCIÓN PUBLICAR SIMPLIFICADA AL MÁXIMO, SIN IMÁGENES, SOLO DATOS
 function publicarOferta(){
+if(!usuarioActual) return alert("⚠️ Inicia sesión primero");
 
-if(!usuarioActual){
-alert("⚠️ Debes iniciar sesión");
-return;
-}
-
-const titulo=document.getElementById('titulo').value.trim();
-const descripcion=document.getElementById('caracteristicas').value.trim();
-const valor=document.getElementById('valor').value.trim();
-const contacto=document.getElementById('contacto').value.trim();
-const categoria=document.getElementById('categoria').value;
-const archivo=document.getElementById('imagenOferta').files[0];
-
-if(!titulo||!descripcion||!valor||!contacto||!categoria){
-alert("⚠️ Completa todos los campos y selecciona una categoría");
-return;
-}
-
-const valorNumerico = parseFloat(valor);
-if(isNaN(valorNumerico) || valorNumerico <= 0){
-alert("⚠️ Escribe un precio válido mayor a 0");
-return;
-}
-
-const idOferta = Date.now().toString();
-
-function guardarOferta(urlImagen=""){
-
+// CAPTURAR DATOS
 const datos = {
-titulo: titulo,
-descripcion: descripcion,
-valor: valorNumerico,
-contacto: contacto,
-categoria: categoria,
-imagen: urlImagen,
+titulo: document.getElementById('titulo').value.trim(),
+descripcion: document.getElementById('caracteristicas').value.trim(),
+valor: document.getElementById('valor').value.trim(),
+contacto: document.getElementById('contacto').value.trim(),
+categoria: document.getElementById('categoria').value,
 usuario: usuarioActual.email,
-uid: usuarioActual.uid,
-fecha: firebase.database.ServerValue.TIMESTAMP
+fecha: Date.now()
 };
 
-db.ref("ofertas/" + categoria + "/" + idOferta).set(datos)
-.then(()=>{
+// VALIDACIÓN
+if(!datos.titulo || !datos.descripcion || !datos.valor || !datos.contacto || !datos.categoria) {
+return alert("⚠️ Completa todos los campos");
+}
+
+// 🟢 GUARDADO DIRECTO Y SEGURO
+const idNuevo = Date.now();
+db.ref("ofertas/" + datos.categoria + "/" + idNuevo).set(datos)
+.then(() => {
 alert("✅ ¡PUBLICADO CON ÉXITO!");
-document.getElementById('titulo').value='';
-document.getElementById('caracteristicas').value='';
-document.getElementById('valor').value='';
-document.getElementById('contacto').value='';
-document.getElementById('imagenOferta').value='';
+document.getElementById('titulo').value = "";
+document.getElementById('caracteristicas').value = "";
+document.getElementById('valor').value = "";
+document.getElementById('contacto').value = "";
 cerrarPublicar();
 })
-.catch((error)=>{
-alert("❌ ERROR: "+error.message);
-});
-
-}
-
-if(archivo){
-const nombreLimpio = idOferta + "_" + archivo.name.replace(/[.#$[\]/]/g, "_");
-const referencia = storage.ref("ofertas/" + nombreLimpio);
-
-referencia.put(archivo)
-.then(snapshot => snapshot.ref.getDownloadURL())
-.then(url => guardarOferta(url))
 .catch(error => {
-guardarOferta("");
+// 🔴 AQUÍ TE DIRÁ POR FIN QUÉ ESTÁ FALLANDO REALMENTE
+alert("❌ ERROR: " + error.code + " | " + error.message);
 });
-
-}else{
-guardarOferta("");
 }
-
-}
-
 </script>
 </body>
 </html>
