@@ -174,7 +174,7 @@ Iniciar Sesión
 
 </div>
 
-<!-- MODAL LOGIN / REGISTRO / RECUPERAR -->
+<!-- MODAL LOGIN / REGISTRO -->
 <div class="modal" id="modalLogin">
 <div class="modal-contenido">
 
@@ -189,15 +189,14 @@ Iniciar Sesión
 Entrar
 </button>
 
-<!-- NUEVO ENLACE DE RECUPERACIÓN -->
 <p class="enlace-olvido" onclick="mostrarOlvido()">¿Olvidaste tu contraseña?</p>
 
 <hr style="margin:18px 0;">
 
 <h2>Crear cuenta</h2>
 
-<input type="text" id="regNombre" placeholder="Nombre completo">
-<input type="email" id="regEmail" placeholder="Correo electrónico">
+<input type="text" id="regNombre" placeholder="Nombre">
+<input type="email" id="regEmail" placeholder="Correo">
 <input type="password" id="regPass" placeholder="Contraseña (mínimo 6 caracteres)">
 
 <button class="btn-enviar" onclick="registrarUsuario()">
@@ -216,7 +215,7 @@ Crear cuenta
 <h2>Recuperar contraseña</h2>
 <p style="font-size:13px; margin-bottom:15px;">Ingresa tu correo y te enviaremos un enlace para cambiar tu contraseña</p>
 
-<input type="email" id="correoRecuperar" placeholder="Tu correo electrónico">
+<input type="email" id="correoRecuperar" placeholder="Tu correo">
 
 <button class="btn-enviar" onclick="enviarCorreoRecuperacion()">
 Enviar enlace
@@ -252,7 +251,7 @@ Publicar
 </div>
 
 <script>
-// ✅ TU CONFIGURACIÓN DE FIREBASE CORRECTA Y COMPLETA
+// CONFIGURACIÓN DE FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
   authDomain: "flasipromo.firebaseapp.com",
@@ -264,23 +263,20 @@ const firebaseConfig = {
   measurementId: "G-LWKKN5ESQR"
 };
 
-// Inicializar Firebase
+// INICIALIZAR FIREBASE
 firebase.initializeApp(firebaseConfig);
 
-// Servicios activos
 const db = firebase.database();
 const auth = firebase.auth();
 let usuarioActual = null;
 
-// Mantener sesión activa
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-// Detectar si hay usuario conectado
 auth.onAuthStateChanged((usuario) => {
   usuarioActual = usuario;
 });
 
-// --- FUNCIONES ---
+// FUNCIONES
 function abrirCategoria(categoria){
 window.location.href=`categoria.html?categoria=${categoria}`;
 }
@@ -293,7 +289,6 @@ function cerrarLogin(){
 document.getElementById('modalLogin').style.display='none';
 }
 
-// NUEVO: Mostrar modal de olvido
 function mostrarOlvido(){
 cerrarLogin();
 document.getElementById('modalOlvido').style.display='block';
@@ -315,18 +310,16 @@ function cerrarPublicar(){
 document.getElementById('modalPublicar').style.display='none';
 }
 
-// ✅ REGISTRAR USUARIO (CORREGIDO Y FUNCIONAL)
+// REGISTRAR USUARIO
 function registrarUsuario(){
 const nombre = document.getElementById('regNombre').value;
 const email = document.getElementById('regEmail').value;
 const pass = document.getElementById('regPass').value;
 
-// Validación mínima
-if(pass.length < 6) return alert("⚠️ La contraseña debe tener al menos 6 caracteres");
+if(pass.length < 6) return alert("La contraseña debe tener al menos 6 caracteres");
 
 auth.createUserWithEmailAndPassword(email, pass)
 .then((cred) => {
-// Guardar datos en la base de datos
 return db.ref('usuarios/' + cred.user.uid).set({
 nombre: nombre,
 correo: email,
@@ -334,51 +327,48 @@ fechaRegistro: firebase.database.ServerValue.TIMESTAMP
 });
 })
 .then(() => {
-alert("✅ Cuenta creada con éxito! Ya puedes entrar.");
+alert("Cuenta creada correctamente");
 cerrarLogin();
 })
 .catch((error) => {
-alert("❌ Error: " + error.message);
+alert("Error: " + error.message);
 });
 }
 
-// ✅ INICIAR SESIÓN (CORREGIDO)
+// INICIAR SESIÓN
 function iniciarSesion(){
 const email = document.getElementById('loginEmail').value;
 const pass = document.getElementById('loginPass').value;
 
 auth.signInWithEmailAndPassword(email, pass)
 .then(() => {
-alert("✅ Sesión iniciada correctamente");
+alert("Sesión iniciada");
 cerrarLogin();
 })
 .catch((error) => {
-alert("❌ Error: " + error.message);
+alert("Error: " + error.message);
 });
 }
 
-// ✅ FUNCIÓN DE RECUPERACIÓN DE CONTRASEÑA
+// RECUPERAR CONTRASEÑA
 function enviarCorreoRecuperacion(){
 const email = document.getElementById('correoRecuperar').value;
 
-if(!email){
-alert("⚠️ Ingresa tu correo electrónico");
-return;
-}
+if(!email) return alert("Ingresa tu correo");
 
 auth.sendPasswordResetEmail(email)
 .then(() => {
-alert("✅ Se ha enviado un enlace a tu correo para restablecer la contraseña");
+alert("Se ha enviado un enlace a tu correo");
 cerrarOlvido();
 })
 .catch((error) => {
-alert("❌ Error: " + error.message);
+alert("Error: " + error.message);
 });
 }
 
-// ✅ PUBLICAR OFERTA
+// PUBLICAR OFERTA
 function publicarOferta(){
-if(!usuarioActual) return alert("⚠️ Debes iniciar sesión");
+if(!usuarioActual) return alert("Debes iniciar sesión");
 
 const datos = {
 titulo: document.getElementById('titulo').value,
@@ -392,7 +382,7 @@ fecha: firebase.database.ServerValue.TIMESTAMP
 
 db.ref('publicaciones').push(datos)
 .then(() => {
-alert("✅ Oferta publicada!");
+alert("Oferta publicada");
 cerrarPublicar();
 });
 }
