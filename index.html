@@ -8,34 +8,217 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-body{background:#f3f3f3;min-height:100vh;display:flex;flex-direction:column}
-.encabezado{background:#056b1f;color:white;padding:15px 10px;text-align:center;position:relative}
-.info-usuario{position:absolute;top:10px;right:10px;font-size:12px;background:#e3c74b;color:#056b1f;padding:5px 10px;border-radius:20px;font-weight:bold;box-shadow:0 2px 4px rgba(0,0,0,.2)}
-.encabezado h1{font-size:20px;margin-bottom:5px}
-.encabezado p{font-size:12px;margin-bottom:10px}
-.btn-login{border:none;padding:8px 16px;border-radius:12px;font-size:13px;font-weight:bold;cursor:pointer;transition:.2s}
-.btn-login:hover{opacity:.9}
-.btn-iniciar{background:white;color:#056b1f}
-.btn-cerrar{background:#dc3545;color:white}
-.menu{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px;padding:20px 15px}
-.btn-menu{width:100%;max-width:280px;padding:15px;border-radius:16px;background:white;border:3px solid #056b1f;font-size:15px;font-weight:bold;color:#056b1f;cursor:pointer;transition:.2s}
-.btn-menu:hover{background:#f0f8f2}
-.btn-publicar{background:#e3c74b;border:none}
-.modal{display:none;position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.6);padding:15px;z-index:10;overflow-y:auto}
-.modal-contenido{background:white;max-width:350px;margin:40px auto;padding:25px;border-radius:18px;position:relative}
-.modal h2{font-size:18px;margin-bottom:20px;color:#056b1f}
-input,textarea,select{width:100%;padding:12px;margin-bottom:12px;border-radius:12px;border:1px solid #ddd;font-size:14px}
-textarea{resize:vertical;min-height:80px}
-.btn-enviar{width:100%;padding:13px;border:none;border-radius:12px;background:#056b1f;color:white;font-weight:bold;font-size:14px;cursor:pointer}
-.btn-enviar:hover{background:#04551a}
-.cerrar{position:absolute;top:15px;right:15px;font-size:24px;cursor:pointer;color:#666}
-.cerrar:hover{color:#000}
-.enlace-olvido{text-align:center;margin-top:10px;color:#056b1f;font-size:13px;cursor:pointer;text-decoration:underline}
-.btn-google{width:100%;padding:12px;border-radius:12px;border:1px solid #ddd;background:white;color:#333;font-weight:bold;font-size:14px;margin-bottom:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
-hr{margin:20px 0;border:none;border-top:1px solid #eee}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#f3f3f3;
+min-height:100vh;
+display:flex;
+flex-direction:column
+}
+
+.encabezado{
+background:#056b1f;
+color:white;
+padding:15px 10px 25px;
+text-align:center
+}
+
+.info-usuario{
+position:relative;
+display:inline-block;
+margin-top:10px;
+font-size:12px;
+background:#e3c74b;
+color:#056b1f;
+padding:5px 10px;
+border-radius:20px;
+font-weight:bold;
+box-shadow:0 2px 4px rgba(0,0,0,.2);
+max-width:90%;
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap
+}
+
+.encabezado h1{
+font-size:20px;
+margin-bottom:5px
+}
+
+.encabezado p{
+font-size:12px;
+margin-bottom:10px
+}
+
+.btn-login{
+border:none;
+padding:8px 16px;
+border-radius:12px;
+font-size:13px;
+font-weight:bold;
+cursor:pointer;
+transition:.2s;
+margin-top:10px
+}
+
+.btn-login:hover{
+opacity:.9
+}
+
+.btn-iniciar{
+background:white;
+color:#056b1f
+}
+
+.btn-cerrar{
+background:#dc3545;
+color:white
+}
+
+.menu{
+flex:1;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+gap:12px;
+padding:20px 15px
+}
+
+.btn-menu{
+width:100%;
+max-width:280px;
+padding:15px;
+border-radius:16px;
+background:white;
+border:3px solid #056b1f;
+font-size:15px;
+font-weight:bold;
+color:#056b1f;
+cursor:pointer;
+transition:.2s
+}
+
+.btn-menu:hover{
+background:#f0f8f2
+}
+
+.btn-publicar{
+background:#e3c74b;
+border:none
+}
+
+.modal{
+display:none;
+position:fixed;
+left:0;
+top:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.6);
+padding:15px;
+z-index:10;
+overflow-y:auto
+}
+
+.modal-contenido{
+background:white;
+max-width:350px;
+margin:40px auto;
+padding:25px;
+border-radius:18px;
+position:relative
+}
+
+.modal h2{
+font-size:18px;
+margin-bottom:20px;
+color:#056b1f
+}
+
+input,textarea,select{
+width:100%;
+padding:12px;
+margin-bottom:12px;
+border-radius:12px;
+border:1px solid #ddd;
+font-size:14px
+}
+
+textarea{
+resize:vertical;
+min-height:80px
+}
+
+.btn-enviar{
+width:100%;
+padding:13px;
+border:none;
+border-radius:12px;
+background:#056b1f;
+color:white;
+font-weight:bold;
+font-size:14px;
+cursor:pointer
+}
+
+.btn-enviar:hover{
+background:#04551a
+}
+
+.cerrar{
+position:absolute;
+top:15px;
+right:15px;
+font-size:24px;
+cursor:pointer;
+color:#666
+}
+
+.cerrar:hover{
+color:#000
+}
+
+.enlace-olvido{
+text-align:center;
+margin-top:10px;
+color:#056b1f;
+font-size:13px;
+cursor:pointer;
+text-decoration:underline
+}
+
+.btn-google{
+width:100%;
+padding:12px;
+border-radius:12px;
+border:1px solid #ddd;
+background:white;
+color:#333;
+font-weight:bold;
+font-size:14px;
+margin-bottom:15px;
+cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px
+}
+
+hr{
+margin:20px 0;
+border:none;
+border-top:1px solid #eee
+}
 </style>
 </head>
 
@@ -44,199 +227,390 @@ hr{margin:20px 0;border:none;border-top:1px solid #eee}
 <div class="encabezado">
 <h1>Ofertas Santa Rosa</h1>
 <p>Productos y servicios cerca de ti</p>
-<div class="info-usuario" id="infoUsuario">❌ No has iniciado sesión</div>
-<button class="btn-login btn-iniciar" id="botonSesion" onclick="accionSesion()">Iniciar Sesión</button>
+
+<div class="info-usuario" id="infoUsuario">
+❌ No has iniciado sesión
+</div>
+
+<br>
+
+<button class="btn-login btn-iniciar" id="botonSesion" onclick="accionSesion()">
+Iniciar Sesión
+</button>
 </div>
 
 <div class="menu">
-<button class="btn-menu" onclick="irACategoria('nuevos')">✨ Productos nuevos</button>
-<button class="btn-menu" onclick="irACategoria('segunda')">♻️ Productos segunda</button>
-<button class="btn-menu" onclick="irACategoria('servicios')">🔧 Servicios</button>
-<button class="btn-menu btn-publicar" onclick="abrirPublicar()">📝 Publicar oferta</button>
+<button class="btn-menu" onclick="irACategoria('nuevos')">
+✨ Productos nuevos
+</button>
+
+<button class="btn-menu" onclick="irACategoria('segunda')">
+♻️ Productos segunda
+</button>
+
+<button class="btn-menu" onclick="irACategoria('servicios')">
+🔧 Servicios
+</button>
+
+<button class="btn-menu btn-publicar" onclick="abrirPublicar()">
+📝 Publicar oferta
+</button>
 </div>
 
-<!-- MODAL LOGIN -->
+<!-- LOGIN -->
 <div class="modal" id="modalLogin">
 <div class="modal-contenido">
+
 <span class="cerrar" onclick="cerrarTodo()">&times;</span>
+
 <h2>Iniciar sesión</h2>
+
 <button class="btn-google" onclick="loginGoogle()">
-<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Iniciar con Google
+<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+Iniciar con Google
 </button>
+
 <hr>
+
 <input type="email" id="correoLogin" placeholder="Correo">
+
 <input type="password" id="claveLogin" placeholder="Contraseña">
-<button class="btn-enviar" onclick="entrar()">Entrar</button>
-<p class="enlace-olvido" onclick="recuperarClave()">¿Olvidaste tu contraseña?</p>
+
+<button class="btn-enviar" onclick="entrar()">
+Entrar
+</button>
+
+<p class="enlace-olvido" onclick="recuperarClave()">
+¿Olvidaste tu contraseña?
+</p>
+
 <hr>
+
 <h2>Crear cuenta</h2>
+
 <input type="text" id="nombreReg" placeholder="Nombre completo">
+
 <input type="email" id="correoReg" placeholder="Correo">
+
 <input type="password" id="claveReg" placeholder="Contraseña">
-<button class="btn-enviar" onclick="registrarme()">Crear cuenta</button>
+
+<button class="btn-enviar" onclick="registrarme()">
+Crear cuenta
+</button>
+
 </div>
 </div>
 
-<!-- MODAL PUBLICAR -->
+<!-- PUBLICAR -->
 <div class="modal" id="modalPublicar">
 <div class="modal-contenido">
+
 <span class="cerrar" onclick="cerrarTodo()">&times;</span>
+
 <h2>Publicar oferta</h2>
+
 <input type="text" id="tituloPub" placeholder="Título">
+
 <textarea id="descripcionPub" placeholder="Descripción detallada"></textarea>
+
 <input type="text" id="precioPub" placeholder="Precio" inputmode="numeric">
+
 <input type="text" id="contactoPub" placeholder="Teléfono / Contacto">
+
 <select id="categoriaPub">
 <option value="nuevos">Productos nuevos</option>
-<option value="segunda">Productos de segunda</option>
+<option value="segunda">Productos segunda</option>
 <option value="servicios">Servicios</option>
 </select>
-<button class="btn-enviar" onclick="guardarPublicacion()">Publicar</button>
+
+<input type="file" id="imagenPub" accept="image/*">
+
+<button class="btn-enviar" onclick="guardarPublicacion()">
+Publicar
+</button>
+
 </div>
 </div>
 
-<!-- MODAL RECUPERAR -->
+<!-- RECUPERAR -->
 <div class="modal" id="modalRecuperar">
 <div class="modal-contenido">
+
 <span class="cerrar" onclick="cerrarTodo()">&times;</span>
+
 <h2>Recuperar contraseña</h2>
+
 <input type="email" id="correoRec" placeholder="Tu correo electrónico">
-<button class="btn-enviar" onclick="enviarRecuperacion()">Enviar enlace</button>
+
+<button class="btn-enviar" onclick="enviarRecuperacion()">
+Enviar enlace
+</button>
+
 </div>
 </div>
 
 <script>
-// ✅ CONFIGURACIÓN EXACTA Y CORRECTA
+
 const firebaseConfig = {
-  apiKey: "AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
-  authDomain: "flasipromo.firebaseapp.com",
-  databaseURL: "https://flasipromo-default-rtdb.firebaseio.com",
-  projectId: "flasipromo",
-  storageBucket: "flasipromo.appspot.com",
-  messagingSenderId: "439920052201",
-  appId: "1:439920052201:ddf170b3be99b732cced78"
+apiKey: "AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
+authDomain: "flasipromo.firebaseapp.com",
+databaseURL: "https://flasipromo-default-rtdb.firebaseio.com",
+projectId: "flasipromo",
+storageBucket: "flasipromo.appspot.com",
+messagingSenderId: "439920052201",
+appId: "1:439920052201:ddf170b3be99b732cced78"
 };
 
-// ✅ INICIALIZACIÓN
 firebase.initializeApp(firebaseConfig);
+
 const db = firebase.database();
 const auth = firebase.auth();
+const storage = firebase.storage();
+
 let usuarioActual = null;
 
-// ✅ DETECTAR SI HAY USUARIO LOGUEADO
 auth.onAuthStateChanged(usuario => {
-  usuarioActual = usuario;
-  actualizarInterfaz();
+usuarioActual = usuario;
+actualizarInterfaz();
 });
 
 function actualizarInterfaz(){
-  const info = document.getElementById("infoUsuario");
-  const boton = document.getElementById("botonSesion");
-  if (usuarioActual) {
-    info.textContent = `✅ ${usuarioActual.email}`;
-    boton.textContent = "Cerrar Sesión";
-    boton.className = "btn-login btn-cerrar";
-  } else {
-    info.textContent = "❌ No has iniciado sesión";
-    boton.textContent = "Iniciar Sesión";
-    boton.className = "btn-login btn-iniciar";
-  }
+
+const info = document.getElementById("infoUsuario");
+const boton = document.getElementById("botonSesion");
+
+if(usuarioActual){
+
+info.textContent = `✅ ${usuarioActual.email}`;
+
+boton.textContent = "Cerrar Sesión";
+
+boton.className = "btn-login btn-cerrar";
+
+}else{
+
+info.textContent = "❌ No has iniciado sesión";
+
+boton.textContent = "Iniciar Sesión";
+
+boton.className = "btn-login btn-iniciar";
+
+}
 }
 
 function accionSesion(){
-  if (usuarioActual) {
-    auth.signOut().then(() => alert("✅ Sesión cerrada"));
-  } else {
-    document.getElementById("modalLogin").style.display = "block";
-  }
+
+if(usuarioActual){
+
+auth.signOut()
+.then(() => alert("✅ Sesión cerrada"));
+
+}else{
+
+document.getElementById("modalLogin").style.display = "block";
+
+}
 }
 
 function irACategoria(cat){
-  window.location.href = `categoria.html?categoria=${cat}`;
+window.location.href = `categoria.html?categoria=${cat}`;
 }
 
 function abrirPublicar(){
-  if (!usuarioActual) return alert("⚠️ Debes iniciar sesión primero");
-  document.getElementById("modalPublicar").style.display = "block";
+
+if(!usuarioActual)
+return alert("⚠️ Debes iniciar sesión primero");
+
+document.getElementById("modalPublicar").style.display = "block";
 }
 
 function cerrarTodo(){
-  document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+document.querySelectorAll('.modal').forEach(m => m.style.display='none');
 }
 
 function recuperarClave(){
-  cerrarTodo();
-  document.getElementById("modalRecuperar").style.display = "block";
+
+cerrarTodo();
+
+document.getElementById("modalRecuperar").style.display = "block";
 }
 
-// ✅ FUNCIONES DE AUTENTICACIÓN
 function registrarme(){
-  const nombre = document.getElementById("nombreReg").value.trim();
-  const correo = document.getElementById("correoReg").value.trim();
-  const clave = document.getElementById("claveReg").value.trim();
-  if(!nombre || !correo || !clave) return alert("⚠️ Completa todo");
-  
-  auth.createUserWithEmailAndPassword(correo, clave)
-  .then(cred => {
-    return db.ref('usuarios/' + cred.user.uid).set({nombre, correo, fecha: Date.now()});
-  })
-  .then(() => { alert("✅ Cuenta creada"); cerrarTodo(); })
-  .catch(e => alert("❌ " + e.message));
+
+const nombre = document.getElementById("nombreReg").value.trim();
+const correo = document.getElementById("correoReg").value.trim();
+const clave = document.getElementById("claveReg").value.trim();
+
+if(!nombre || !correo || !clave)
+return alert("⚠️ Completa todo");
+
+auth.createUserWithEmailAndPassword(correo,clave)
+
+.then(cred => {
+
+return db.ref('usuarios/' + cred.user.uid).set({
+nombre,
+correo,
+fecha:Date.now()
+});
+
+})
+
+.then(() => {
+
+alert("✅ Cuenta creada");
+
+cerrarTodo();
+
+})
+
+.catch(e => alert("❌ " + e.message));
 }
 
 function entrar(){
-  const correo = document.getElementById("correoLogin").value.trim();
-  const clave = document.getElementById("claveLogin").value.trim();
-  if(!correo || !clave) return alert("⚠️ Escribe correo y clave");
 
-  auth.signInWithEmailAndPassword(correo, clave)
-  .then(() => { alert("✅ Bienvenido"); cerrarTodo(); })
-  .catch(e => alert("❌ " + e.message));
+const correo = document.getElementById("correoLogin").value.trim();
+const clave = document.getElementById("claveLogin").value.trim();
+
+if(!correo || !clave)
+return alert("⚠️ Escribe correo y clave");
+
+auth.signInWithEmailAndPassword(correo,clave)
+
+.then(() => {
+
+alert("✅ Bienvenido");
+
+cerrarTodo();
+
+})
+
+.catch(e => alert("❌ " + e.message));
 }
 
 function loginGoogle(){
-  const prov = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(prov)
-  .then(() => { alert("✅ Bienvenido con Google"); cerrarTodo(); })
-  .catch(e => alert("❌ " + e.message));
+
+const prov = new firebase.auth.GoogleAuthProvider();
+
+auth.signInWithPopup(prov)
+
+.then(() => {
+
+alert("✅ Bienvenido con Google");
+
+cerrarTodo();
+
+})
+
+.catch(e => alert("❌ " + e.message));
 }
 
 function enviarRecuperacion(){
-  const correo = document.getElementById("correoRec").value.trim();
-  auth.sendPasswordResetEmail(correo)
-  .then(() => { alert("✅ Revisa tu correo"); cerrarTodo(); })
-  .catch(e => alert("❌ " + e.message));
+
+const correo = document.getElementById("correoRec").value.trim();
+
+auth.sendPasswordResetEmail(correo)
+
+.then(() => {
+
+alert("✅ Revisa tu correo");
+
+cerrarTodo();
+
+})
+
+.catch(e => alert("❌ " + e.message));
 }
 
-// ✅ FUNCIÓN PUBLICAR (LA CLAVE DE TODO)
-function guardarPublicacion(){
-  const datos = {
-    titulo: document.getElementById("tituloPub").value.trim(),
-    descripcion: document.getElementById("descripcionPub").value.trim(),
-    valor: document.getElementById("precioPub").value.trim(),
-    contacto: document.getElementById("contactoPub").value.trim(),
-    categoria: document.getElementById("categoriaPub").value,
-    usuario: usuarioActual.email,
-    fecha: Date.now()
-  };
+async function guardarPublicacion(){
 
-  if(!datos.titulo || !datos.descripcion || !datos.valor || !datos.contacto) 
-    return alert("⚠️ Completa todos los campos");
+const archivo = document.getElementById("imagenPub").files[0];
 
-  // 🟢 GUARDADO DIRECTO EN LA RUTA CORRECTA
-  const idUnico = Date.now();
-  db.ref("ofertas/" + datos.categoria + "/" + idUnico).set(datos)
-  .then(() => {
-    alert("✅ ¡PUBLICADO CON ÉXITO!");
-    // Limpiar campos
-    document.getElementById("tituloPub").value = "";
-    document.getElementById("descripcionPub").value = "";
-    document.getElementById("precioPub").value = "";
-    document.getElementById("contactoPub").value = "";
-    cerrarTodo();
-  })
-  .catch(e => alert("❌ ERROR DB: " + e.message));
+const datos = {
+
+titulo: document.getElementById("tituloPub").value.trim(),
+
+descripcion: document.getElementById("descripcionPub").value.trim(),
+
+valor: document.getElementById("precioPub").value.trim(),
+
+contacto: document.getElementById("contactoPub").value.trim(),
+
+categoria: document.getElementById("categoriaPub").value,
+
+usuario: usuarioActual.email,
+
+fecha: Date.now(),
+
+expira: Date.now() + (3 * 24 * 60 * 60 * 1000)
+
+};
+
+if(!datos.titulo || !datos.descripcion || !datos.valor || !datos.contacto)
+return alert("⚠️ Completa todos los campos");
+
+try{
+
+const idUnico = Date.now();
+
+if(archivo){
+
+const ref = storage.ref("imagenes/" + idUnico + "_" + archivo.name);
+
+await ref.put(archivo);
+
+datos.imagen = await ref.getDownloadURL();
+
 }
+
+await db.ref("ofertas/" + datos.categoria + "/" + idUnico).set(datos);
+
+alert("✅ ¡PUBLICADO CON ÉXITO!");
+
+document.getElementById("tituloPub").value = "";
+document.getElementById("descripcionPub").value = "";
+document.getElementById("precioPub").value = "";
+document.getElementById("contactoPub").value = "";
+document.getElementById("imagenPub").value = "";
+
+cerrarTodo();
+
+}catch(e){
+
+alert("❌ ERROR: " + e.message);
+
+}
+}
+
+function limpiarPublicacionesVencidas(){
+
+const categorias = ["nuevos","segunda","servicios"];
+
+categorias.forEach(cat => {
+
+db.ref("ofertas/" + cat).once("value", snap => {
+
+snap.forEach(item => {
+
+const pub = item.val();
+
+if(pub.expira && Date.now() > pub.expira){
+
+item.ref.remove();
+
+}
+
+});
+
+});
+
+});
+
+}
+
+limpiarPublicacionesVencidas();
+
 </script>
+
 </body>
 </html>
