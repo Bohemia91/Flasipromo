@@ -5,12 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ofertas Santa Rosa</title>
 
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 
 <style>
+
 *{
 margin:0;
 padding:0;
@@ -32,46 +34,39 @@ padding:15px 10px 25px;
 text-align:center
 }
 
+.encabezado h1{
+font-size:22px;
+margin-bottom:5px
+}
+
+.encabezado p{
+font-size:13px;
+margin-bottom:10px
+}
+
 .info-usuario{
-position:relative;
 display:inline-block;
 margin-top:10px;
 font-size:12px;
 background:#e3c74b;
 color:#056b1f;
-padding:5px 10px;
+padding:6px 12px;
 border-radius:20px;
 font-weight:bold;
-box-shadow:0 2px 4px rgba(0,0,0,.2);
 max-width:90%;
 overflow:hidden;
 text-overflow:ellipsis;
 white-space:nowrap
 }
 
-.encabezado h1{
-font-size:20px;
-margin-bottom:5px
-}
-
-.encabezado p{
-font-size:12px;
-margin-bottom:10px
-}
-
 .btn-login{
 border:none;
-padding:8px 16px;
+padding:10px 18px;
 border-radius:12px;
 font-size:13px;
 font-weight:bold;
 cursor:pointer;
-transition:.2s;
 margin-top:10px
-}
-
-.btn-login:hover{
-opacity:.9
 }
 
 .btn-iniciar{
@@ -91,12 +86,12 @@ flex-direction:column;
 justify-content:center;
 align-items:center;
 gap:12px;
-padding:20px 15px
+padding:20px
 }
 
 .btn-menu{
 width:100%;
-max-width:280px;
+max-width:300px;
 padding:15px;
 border-radius:16px;
 background:white;
@@ -104,12 +99,7 @@ border:3px solid #056b1f;
 font-size:15px;
 font-weight:bold;
 color:#056b1f;
-cursor:pointer;
-transition:.2s
-}
-
-.btn-menu:hover{
-background:#f0f8f2
+cursor:pointer
 }
 
 .btn-publicar{
@@ -126,13 +116,13 @@ width:100%;
 height:100%;
 background:rgba(0,0,0,.6);
 padding:15px;
-z-index:10;
+z-index:100;
 overflow-y:auto
 }
 
 .modal-contenido{
 background:white;
-max-width:350px;
+max-width:360px;
 margin:40px auto;
 padding:25px;
 border-radius:18px;
@@ -141,11 +131,13 @@ position:relative
 
 .modal h2{
 font-size:18px;
-margin-bottom:20px;
+margin-bottom:18px;
 color:#056b1f
 }
 
-input,textarea,select{
+input,
+textarea,
+select{
 width:100%;
 padding:12px;
 margin-bottom:12px;
@@ -156,7 +148,7 @@ font-size:14px
 
 textarea{
 resize:vertical;
-min-height:80px
+min-height:90px
 }
 
 .btn-enviar{
@@ -171,21 +163,13 @@ font-size:14px;
 cursor:pointer
 }
 
-.btn-enviar:hover{
-background:#04551a
-}
-
 .cerrar{
 position:absolute;
-top:15px;
+top:12px;
 right:15px;
 font-size:24px;
 cursor:pointer;
 color:#666
-}
-
-.cerrar:hover{
-color:#000
 }
 
 .enlace-olvido{
@@ -203,7 +187,6 @@ padding:12px;
 border-radius:12px;
 border:1px solid #ddd;
 background:white;
-color:#333;
 font-weight:bold;
 font-size:14px;
 margin-bottom:15px;
@@ -219,13 +202,18 @@ margin:20px 0;
 border:none;
 border-top:1px solid #eee
 }
+
 </style>
 </head>
 
 <body>
 
+<!-- ENCABEZADO -->
+
 <div class="encabezado">
+
 <h1>Ofertas Santa Rosa</h1>
+
 <p>Productos y servicios cerca de ti</p>
 
 <div class="info-usuario" id="infoUsuario">
@@ -237,9 +225,13 @@ border-top:1px solid #eee
 <button class="btn-login btn-iniciar" id="botonSesion" onclick="accionSesion()">
 Iniciar Sesión
 </button>
+
 </div>
 
+<!-- MENÚ -->
+
 <div class="menu">
+
 <button class="btn-menu" onclick="irACategoria('nuevos')">
 ✨ Productos nuevos
 </button>
@@ -255,10 +247,13 @@ Iniciar Sesión
 <button class="btn-menu btn-publicar" onclick="abrirPublicar()">
 📝 Publicar oferta
 </button>
+
 </div>
 
-<!-- LOGIN -->
+<!-- MODAL LOGIN -->
+
 <div class="modal" id="modalLogin">
+
 <div class="modal-contenido">
 
 <span class="cerrar" onclick="cerrarTodo()">&times;</span>
@@ -301,8 +296,10 @@ Crear cuenta
 </div>
 </div>
 
-<!-- PUBLICAR -->
+<!-- MODAL PUBLICAR -->
+
 <div class="modal" id="modalPublicar">
+
 <div class="modal-contenido">
 
 <span class="cerrar" onclick="cerrarTodo()">&times;</span>
@@ -313,9 +310,9 @@ Crear cuenta
 
 <textarea id="descripcionPub" placeholder="Descripción detallada"></textarea>
 
-<input type="text" id="precioPub" placeholder="Precio" inputmode="numeric">
+<input type="text" id="precioPub" placeholder="Precio">
 
-<input type="text" id="contactoPub" placeholder="Teléfono / Contacto">
+<input type="text" id="contactoPub" placeholder="Número WhatsApp">
 
 <select id="categoriaPub">
 <option value="nuevos">Productos nuevos</option>
@@ -332,15 +329,17 @@ Publicar
 </div>
 </div>
 
-<!-- RECUPERAR -->
+<!-- MODAL RECUPERAR -->
+
 <div class="modal" id="modalRecuperar">
+
 <div class="modal-contenido">
 
 <span class="cerrar" onclick="cerrarTodo()">&times;</span>
 
 <h2>Recuperar contraseña</h2>
 
-<input type="email" id="correoRec" placeholder="Tu correo electrónico">
+<input type="email" id="correoRec" placeholder="Tu correo">
 
 <button class="btn-enviar" onclick="enviarRecuperacion()">
 Enviar enlace
@@ -351,37 +350,59 @@ Enviar enlace
 
 <script>
 
+// FIREBASE CONFIG
+
 const firebaseConfig = {
+
 apiKey: "AIzaSyDy3wNIh44yWvQ0taoC-I1MiiLj9a77zpY",
+
 authDomain: "flasipromo.firebaseapp.com",
+
 databaseURL: "https://flasipromo-default-rtdb.firebaseio.com",
+
 projectId: "flasipromo",
-storageBucket: "flasipromo.appspot.com",
+
+storageBucket: "flasipromo.firebasestorage.app",
+
 messagingSenderId: "439920052201",
+
 appId: "1:439920052201:ddf170b3be99b732cced78"
+
 };
+
+// INICIALIZAR
 
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
+
 const auth = firebase.auth();
+
 const storage = firebase.storage();
 
 let usuarioActual = null;
 
+// USUARIO LOGUEADO
+
 auth.onAuthStateChanged(usuario => {
+
 usuarioActual = usuario;
+
 actualizarInterfaz();
+
 });
+
+// INTERFAZ
 
 function actualizarInterfaz(){
 
 const info = document.getElementById("infoUsuario");
+
 const boton = document.getElementById("botonSesion");
 
 if(usuarioActual){
 
-info.textContent = `✅ ${usuarioActual.email}`;
+info.textContent = "✅ " + usuarioActual.email;
 
 boton.textContent = "Cerrar Sesión";
 
@@ -396,62 +417,107 @@ boton.textContent = "Iniciar Sesión";
 boton.className = "btn-login btn-iniciar";
 
 }
+
 }
+
+// SESIÓN
 
 function accionSesion(){
 
 if(usuarioActual){
 
 auth.signOut()
-.then(() => alert("✅ Sesión cerrada"));
+
+.then(() => {
+
+alert("✅ Sesión cerrada");
+
+});
 
 }else{
 
 document.getElementById("modalLogin").style.display = "block";
 
 }
+
 }
 
+// CATEGORÍAS
+
 function irACategoria(cat){
+
 window.location.href = `categoria.html?categoria=${cat}`;
+
 }
+
+// ABRIR PUBLICAR
 
 function abrirPublicar(){
 
-if(!usuarioActual)
-return alert("⚠️ Debes iniciar sesión primero");
+if(!usuarioActual){
+
+alert("⚠️ Debes iniciar sesión");
+
+return;
+
+}
 
 document.getElementById("modalPublicar").style.display = "block";
+
 }
 
+// CERRAR MODALES
+
 function cerrarTodo(){
-document.querySelectorAll('.modal').forEach(m => m.style.display='none');
+
+document.querySelectorAll(".modal").forEach(m => {
+
+m.style.display = "none";
+
+});
+
 }
+
+// RECUPERAR
 
 function recuperarClave(){
 
 cerrarTodo();
 
 document.getElementById("modalRecuperar").style.display = "block";
+
 }
+
+// REGISTRO
 
 function registrarme(){
 
 const nombre = document.getElementById("nombreReg").value.trim();
+
 const correo = document.getElementById("correoReg").value.trim();
+
 const clave = document.getElementById("claveReg").value.trim();
 
-if(!nombre || !correo || !clave)
-return alert("⚠️ Completa todo");
+if(!nombre || !correo || !clave){
+
+alert("⚠️ Completa todos los campos");
+
+return;
+
+}
 
 auth.createUserWithEmailAndPassword(correo,clave)
 
 .then(cred => {
 
-return db.ref('usuarios/' + cred.user.uid).set({
+return db.ref("usuarios/" + cred.user.uid).set({
+
 nombre,
+
 correo,
-fecha:Date.now()
+
+fecha: Date.now()
+
 });
 
 })
@@ -464,16 +530,29 @@ cerrarTodo();
 
 })
 
-.catch(e => alert("❌ " + e.message));
+.catch(e => {
+
+alert("❌ " + e.message);
+
+});
+
 }
+
+// LOGIN
 
 function entrar(){
 
 const correo = document.getElementById("correoLogin").value.trim();
+
 const clave = document.getElementById("claveLogin").value.trim();
 
-if(!correo || !clave)
-return alert("⚠️ Escribe correo y clave");
+if(!correo || !clave){
+
+alert("⚠️ Completa correo y contraseña");
+
+return;
+
+}
 
 auth.signInWithEmailAndPassword(correo,clave)
 
@@ -485,8 +564,15 @@ cerrarTodo();
 
 })
 
-.catch(e => alert("❌ " + e.message));
+.catch(e => {
+
+alert("❌ " + e.message);
+
+});
+
 }
+
+// GOOGLE
 
 function loginGoogle(){
 
@@ -502,8 +588,15 @@ cerrarTodo();
 
 })
 
-.catch(e => alert("❌ " + e.message));
+.catch(e => {
+
+alert("❌ " + e.message);
+
+});
+
 }
+
+// RECUPERAR CONTRASEÑA
 
 function enviarRecuperacion(){
 
@@ -519,8 +612,15 @@ cerrarTodo();
 
 })
 
-.catch(e => alert("❌ " + e.message));
+.catch(e => {
+
+alert("❌ " + e.message);
+
+});
+
 }
+
+// PUBLICAR
 
 async function guardarPublicacion(){
 
@@ -546,16 +646,30 @@ expira: Date.now() + (3 * 24 * 60 * 60 * 1000)
 
 };
 
-if(!datos.titulo || !datos.descripcion || !datos.valor || !datos.contacto)
-return alert("⚠️ Completa todos los campos");
+if(
+!datos.titulo ||
+!datos.descripcion ||
+!datos.valor ||
+!datos.contacto
+){
+
+alert("⚠️ Completa todos los campos");
+
+return;
+
+}
 
 try{
 
 const idUnico = Date.now();
 
+// IMAGEN
+
 if(archivo){
 
-const ref = storage.ref("imagenes/" + idUnico + "_" + archivo.name);
+const ref = storage.ref(
+"imagenes/" + idUnico + "_" + archivo.name
+);
 
 await ref.put(archivo);
 
@@ -563,32 +677,55 @@ datos.imagen = await ref.getDownloadURL();
 
 }
 
-await db.ref("ofertas/" + datos.categoria + "/" + idUnico).set(datos);
+// GUARDAR
 
-alert("✅ ¡PUBLICADO CON ÉXITO!");
+await db.ref(
+"ofertas/" + datos.categoria + "/" + idUnico
+).set(datos);
+
+alert("✅ Publicación creada");
+
+// LIMPIAR
 
 document.getElementById("tituloPub").value = "";
+
 document.getElementById("descripcionPub").value = "";
+
 document.getElementById("precioPub").value = "";
+
 document.getElementById("contactoPub").value = "";
+
 document.getElementById("imagenPub").value = "";
 
 cerrarTodo();
 
 }catch(e){
 
-alert("❌ ERROR: " + e.message);
+console.log(e);
+
+alert("❌ " + e.message);
 
 }
+
 }
+
+// BORRAR PUBLICACIONES VENCIDAS
 
 function limpiarPublicacionesVencidas(){
 
-const categorias = ["nuevos","segunda","servicios"];
+const categorias = [
+
+"nuevos",
+"segunda",
+"servicios"
+
+];
 
 categorias.forEach(cat => {
 
-db.ref("ofertas/" + cat).once("value", snap => {
+db.ref("ofertas/" + cat)
+
+.once("value", snap => {
 
 snap.forEach(item => {
 
@@ -613,4 +750,4 @@ limpiarPublicacionesVencidas();
 </script>
 
 </body>
-</html>
+                                     </html>
